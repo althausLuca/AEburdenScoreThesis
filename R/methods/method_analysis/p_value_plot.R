@@ -75,20 +75,21 @@ p_value_plot_handler <- function() {
 source("R/methods/run_methods.R")
 source("R/methods/methods_settings.R")
 
+load("perm_test_longer.RData")
 model_file <- "Scenario_3_k_1.5_l_3.5.csv"
+
 p_values <- get_values(model_file, "p_value")
 
 names(p_values)
 
 # Example usage
 handler <- p_value_plot_handler()
-# handler$add(p_values$lm, "ANOVA", "green")
-# handler$add(p_values$anova_c_0.001, "Log-ANOVA $$$_{c=0.001}$", "navy")
-# handler$add(p_values$anova_c_1, "Log-ANOVA $$$_{c=1}$", "royalblue4")
-# handler$add(p_values$tweedie, "Tweedie Regression", "blue")
+handler$add(p_values$lm, "ANOVA", "darkgreen")
+handler$add(p_values$anova_c_0.001, "Log-ANOVA $$$_{c=0.001}$", "navy")
+handler$add(p_values$anova_c_1, "Log-ANOVA $$$_{c=1}$", "royalblue4")
+handler$add(p_values$tweedie, "Tweedie Regression", "blue")
 handler$add(p_values$quantile_regression, "Median Regression", "orange")
 
-load("perm_test_longer.RData")
 
 handler$add(permutations_tests, "Permutation Test", "red")
 handler$plot()
