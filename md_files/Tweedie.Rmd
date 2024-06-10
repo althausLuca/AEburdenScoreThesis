@@ -1,0 +1,78 @@
+---
+title: "tweedie"
+output: pdf_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+library(here)
+library(statmod)
+
+setwd(here::here())
+here::here() 
+"here::here() has to end with project name"
+knitr::opts_knit$set(root.dir = here::here())
+
+source("../R/AdvereEvents/AdverseEvents.R")
+source("R/Scenarios.R")
+source("../R/methods/run_methods.R")
+```
+
+
+
+```{r}
+# Generate some data
+set.seed(123)
+n <- 100
+x <- runif(n)
+y <- rtweedie(n, mu = exp(1 + x), phi = 2, power = 1.5)
+
+# Fit a Tweedie model with identity link
+fit <- glm(y ~ x, family = tweedie(var.power = 1.5, link.power = 1), start = c(0, 1))
+
+# Estimate var.power by profile likelihood
+prof <- tweedie.profile(y ~ x, p.vec = seq(1, 3, by = 0.01), method = "series")
+# Plot the profile log-likelihood
+plot(prof)
+prof$y
+# Get the maximum likelihood estimate and confidence interval
+summary(prof)
+prof$p.max
+prof$L.max
+```
+
+```{r}
+data <- load_data(SCENARIOS$frequency)
+score_df <- data$scores[[100]]
+score_df
+fit.1 <- glm(score_df$scores ~ score_df$groups, family = tweedie(var.power = 1.5, link.power = 0))
+
+?tweedie.profile
+
+prof <- tweedie.profile(score_df$scores ~ score_df$groups,data=score_df, p.vec = seq(1, 2.5, by = 0.1))
+plot(prof)
+prof$p.max
+```
+```{r}
+data$tweedie$AIC
+```
+
+```{r}
+data <- load_data(SCENARIOS$equal)
+score_df <- data$scores[[10]]
+fit.2 <- glm(score_df$scores ~ score_df$groups, family = tweedie(var.power = 1.5, link.power = 0))
+
+?tweedie.profile
+#prof <- tweedie.profile(score_df$scores ~ score_df$groups,data=score_df, p.vec = seq(1, 1.5, by = 0.1),link.power=1)
+#plot(prof)
+#summary(prof)
+
+prof <- tweedie.profile(score_df$scores ~ score_df$groups,data=score_df, p.vec = seq(1, 3.5, by = 0.1))
+plot(prof)
+```
+
+
+```{r}
+fit.2
+```
+

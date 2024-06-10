@@ -1,0 +1,96 @@
+---
+title: "Measure comparison"
+output: pdf_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(jsonlite)
+library(here)
+
+setwd(here::here())
+here::here() 
+"here::here() has to end with project name"
+knitr::opts_knit$set(root.dir = here::here())
+
+source("../R/AdvereEvents/AdverseEvents.R")
+source("R/Scenarios.R")
+source("R/data_analysis.R")
+
+```
+
+```{r}
+
+# Read the JSON file containing the measurement data
+data <- load_data(SCENARIOS$equal)
+
+# Define the models and parameters of interest
+models <- c("lm", "tweedy_1.5_0","tweedy_1.5_0", "quantile_regression")
+parameters <- c("t_value", "t_value", "estimate", "estimate")
+
+plot_models(data,models,parameters)
+plot_distritubtions(data,models,parameters)
+
+```
+
+```{r}
+library(jsonlite)
+
+# Read the JSON file containing the measurement data
+file_name <- "../data/similar.json"
+
+# Define the models and parameters of interest
+models <- c("lm", "tweedy_1.5_0", "tweedy_1.5_0" , "quantile_regression")
+parameters <- c("t_value", "t_value", "estimate", "estimate")
+
+plot_models(file_name,models,parameters)
+plot_distritubtions(file_name,models,parameters)
+
+```
+
+
+## treatmenteffect / standard error
+
+```{r}
+library(jsonlite)
+
+# Read the JSON file containing the measurement data
+file_name <- "../data/frequecy_low_large_sim.json"
+
+measure_list <- fromJSON(file_name)
+
+lm_effects <- unlist(measure_list$lm$p_value)
+#lm_se <- measure_list$lm$std_err 
+
+tweedy_effects <- unlist(measure_list$tweedy_1.5_0$p_value)
+#tweedy_se <- measure_list$tweedy_1.5_0$std_err
+
+quantile_effects <- unlist(measure_list$quantile_regression$p_value)
+#quantile_se <- measure_list$quantile_regression$std_err
+
+
+## plot of effects / standard error
+plot(lm_effects,quantile_effects,  col = "red", pch = 1, xlab = "Treatment effect", ylab = "Standard error")
+points(tweedy_effects , col = "blue", pch = 1)
+points(quantile_effects, col = "green", pch = 1)
+
+## plot of effects divided by standard error
+lm_effects_lm_se <- unlist(lm_effects)/unlist(lm_se)
+tweedy_effects_tweedy_se <- unlist(tweedy_effects)/unlist(tweedy_se)
+quantile_effects_quantile_se <-unlist(quantile_effects)/unlist(quantile_se)
+
+plot(lm_effects_lm_se, col = "red", pch =3, xlab = "sample", ylab = "effect/std")
+points(tweedy_effects_tweedy_se, col = "blue", pch = 3)
+points(quantile_effects_quantile_se, col = "green", pch = 3)
+
+
+quantile_effects_sorted <- -quantile_effects_quantile_se[order(quantile_effects_quantile_se)]
+tweedy_effects_sorted <- -tweedy_effects_tweedy_se[order(tweedy_effects_tweedy_se)]
+lm_effects_sorted <- -lm_effects_lm_se[order(lm_effects_lm_se)]
+
+plot(lm_effects_sorted, col = "red", pch = 10, xlab = "sample", ylab = "effect/std")
+points(tweedy_effects_sorted, col = "blue", pch = 8)
+points(quantile_effects_sorted, col = "green", pch = 6)
+
+```

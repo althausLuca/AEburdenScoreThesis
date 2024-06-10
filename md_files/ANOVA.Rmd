@@ -1,0 +1,60 @@
+---
+title: "ANOVA"
+output: html_document
+date: "2023-11-18"
+---
+
+```{r setup, include=FALSE}
+library(here)
+
+setwd(here::here())
+here::here() 
+"here::here() has to end with project name"
+knitr::opts_knit$set(root.dir = here::here())
+
+source("../R/AdvereEvents/AdverseEvents.R")
+source("R/Scenarios.R")
+```
+
+```{r}
+data <- load_data(SCENARIOS$frequency)
+scores.1 <- data$scores[[3]]
+var(scores.1$scores[scores.1$groups =="control"])
+var(scores.1$scores[scores.1$groups =="treatment"])
+
+# equal variances
+sum(data$anova$p_value < 0.05)/length(data$anova$p_value)
+```
+
+
+```{r}
+data <- load_data(SCENARIOS$equal)
+scores.1 <- data$scores[[1]]
+var(scores.1$scores[scores.1$groups =="control"])
+var(scores.1$scores[scores.1$groups =="treatment"])
+
+# equal variances
+sum(data$anova$p_value < 0.05)/length(data$anova$p_value)
+```
+```{r}
+data <- load_data(SCENARIOS$)
+scores.1 <- data$scores[[1]]
+var(scores.1$scores[scores.1$groups =="control"])
+var(scores.1$scores[scores.1$groups =="treatment"])
+
+# equal variances
+sum(data$anova$p_value < 0.05)/length(data$anova$p_value)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

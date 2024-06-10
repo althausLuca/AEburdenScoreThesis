@@ -1,0 +1,280 @@
+---
+title: "Skewed Distribution"
+output: pdf_document
+---
+
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+source("../R/AdvereEvents/AdverseEvents.R")
+```
+
+
+## Define 2 Groups
+```{r}
+n <- 20
+
+#Group 1
+AE.1 <- AE(200,30,20) # time to initial event , duration , gap in between
+AE.2 <- AE(160,40,15)
+AE.3 <- AE(180,30,4)
+
+AEs.1 <- list(AE.1,AE.2,AE.3)
+
+scores.1 <- c()
+for(i in 1:n){
+  AEs_.1  <- simulate_events(AEs.1,180)
+  scores.1 <- c(scores.1,AEs_.1$Score)
+}
+scores.1
+```
+
+```{r}
+#Group 2 
+AE.1 <- AE(10,30,100)
+AE.2 <- AE(20,40,90)
+AE.3 <- AE(50,70,60)
+
+AEs.2 <- list(AE.1,AE.2,AE.3)
+
+scores.2 <- c()
+for(i in 1:n){
+  AEs_.2  <- simulate_events(AEs.2,180)
+scores.2 <- c(scores.2,AEs_.2$Score)
+}
+scores.2
+```
+
+
+
+```{r}
+## put both scores in a df for with the groups as a factor variable
+scores <- c(scores.1,scores.2)
+groups <- factor(c(rep(1,length(scores.1)),rep(2,length(scores.2))))
+score_data <- data.frame(scores,groups)
+
+#score_data
+```
+
+
+```{r}
+# plot the distriubtion of the scores
+
+#install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(score_data, aes(x = scores, fill = groups)) +
+  geom_histogram(binwidth = 30, position = "identity", alpha =0.5) +
+  labs(title = "Distribution of Scores by Group", x = "Score", y = "Count") +
+  scale_fill_discrete(name = "Group", labels = c("Group 1", "Group 2")) +
+  theme_bw()
+
+
+
+```
+
+
+```{r}
+# First a simple linear regression model
+lm_model <- lm(scores ~ groups, data = score_data)
+
+summary(lm_model)
+```
+
+```{r}
+# Fit a Tweedie regression model 
+#install.packages("tweedie")
+#install.packages("statmod")
+
+library(tweedie)
+library(statmod)
+
+tweedie_model <- glm(score_data$scores~score_data$groups, family = 
+           tweedie(var.power=1, 
+           link.power=0), control = glm.control(maxit = 100))
+
+tweedie_model.2 <- glm(score_data$scores~score_data$groups, family = 
+           tweedie(var.power=1.5, 
+           link.power=0), control = glm.control(maxit = 100))
+
+tweedie_model.3 <- glm(score_data$scores~score_data$groups, family = 
+           tweedie(var.power=2, 
+           link.power=0), control = glm.control(maxit = 100))
+
+tweedie_model.4 <- glm(score_data$scores~score_data$groups, family = 
+           tweedie(var.power=1, 
+           link.power=1), control = glm.control(maxit = 100))
+summary(tweedie_model.4)
+
+```
+
+
+```{r}
+# Fit quantile regression model
+#install.packages("quantreg")
+
+library(quantreg)
+quantile_regression_model <- rq(score_data$scores~score_data$groups)
+summary(quantile_regression_model, se="nid") #https://cran.r-project.org/web/packages/quantreg/vignettes/rq.pdf or ker
+
+```
+## AIC analysis 
+
+```{r}
+AIC(lm_model)
+AICtweedie(tweedie_model,dispersion=1) # simple AIC is NAN
+AICtweedie(tweedie_model.2,dispersion=1) 
+AICtweedie(tweedie_model.3,dispersion=1) 
+AICtweedie(tweedie_model.4,dispersion=1) 
+AIC(quantile_regression_model)[1]
+```
+
+## residual analysis
+```{r}
+lm_resid <- resid(lm_model)
+quantile_resid <- resid(quantile_regression_model)
+tweeie_resid <- resid(tweedie_model)
+
+#install.packages("ggplot2")
+#install.packages("gridExtra")
+
+library(ggplot2)
+library(gridExtra)
+
+# Create residual vs. fitted value plots
+residual_vs_fitted_lm <- ggplot(data = data.frame(Fitted = fitted(lm_model), Residuals = lm_resid), aes(x = Fitted, y = Residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs. Fitted Values (Linear Regression)")
+
+residual_vs_fitted_quantile <- ggplot(data = data.frame(Fitted = fitted(quantile_regression_model), Residuals = quantile_resid), aes(x = Fitted, y = Residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs. Fitted Values (Quantile Regression)")
+
+residual_vs_fitted_tweedie <- ggplot(data = data.frame(Fitted = fitted(tweedie_model), Residuals = tweeie_resid), aes(x = Fitted, y = Residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs. Fitted Values (Tweedie Regression)")
+
+# Create normal Q-Q plots
+qq_plot_lm <- ggplot(data = data.frame(Residuals = lm_resid), aes(sample = Residuals)) +
+  geom_qq() +
+  geom_qq_line(color = "red") +
+  labs(title = "Normal Q-Q Plot (Linear Regression)")
+
+qq_plot_quantile <- ggplot(data = data.frame(Residuals = quantile_resid), aes(sample = Residuals)) +
+  geom_qq() +
+  geom_qq_line(color = "red") +
+  labs(title = "Normal Q-Q Plot (Quantile Regression)")
+
+qq_plot_tweedie <- ggplot(data = data.frame(Residuals = tweeie_resid), aes(sample = Residuals)) +
+  geom_qq() +
+  geom_qq_line(color = "red") +
+  labs(title = "Normal Q-Q Plot (Tweedie Regression)")
+
+# Combine the plots
+grid.arrange(residual_vs_fitted_lm, residual_vs_fitted_quantile, residual_vs_fitted_tweedie, qq_plot_lm, qq_plot_quantile, qq_plot_tweedie, ncol = 2)
+
+
+```
+
+
+```{r}
+#install.packages("lmtest")
+library(lmtest)
+# Perform a Likelihood Ratio Test 
+lrt_result <- lrtest(lm_model, tweedie_model.2) #quantile_regression_model not applicable
+print("Likelihood Ratio Test:")
+print(lrt_result)
+
+# for nested models only
+#deviance_lm <- deviance(lm_model)
+#deviance_tweedie <- deviance(tweedie_model.2)
+
+#print("Deviance for Linear Model:")
+#print(deviance_lm)
+#print("Deviance for Tweedie Model:")
+#print(deviance_tweedie)
+```
+
+
+## basic tests
+
+```{r}
+t_test_result <- t.test(scores ~ groups, data = score_data)
+anova_result <- aov(scores ~ groups, data = score_data)
+wilcoxon_result <- wilcox.test(scores ~ groups, data = score_data)
+
+"t_test"
+t_test_result
+
+"wilcoxon"
+wilcoxon_result
+
+"anova"
+summary(anova_result)
+
+## anova with ln 
+delta = 1
+```
+
+
+```{r}
+score_data.ln <- score_data
+score_data.ln$scores <- log(score_data.ln$scores+delta)
+anova_result.ln <- aov(scores ~ groups, data = score_data.ln)
+"anova log"
+summary(anova_result.ln)
+
+```
+
+
+## P-values
+```{r}
+
+lm_p_value <- summary(lm_model)$coefficients["groups2", "Pr(>|t|)"]
+tweedy_p_value <- summary(tweedie_model)$coefficients["score_data$groups2", "Pr(>|t|)"]
+p_value_groups2_quantile <- summary(quantile_regression_model, se="nid")$coefficients["score_data$groups2", "Pr(>|t|)"]
+
+# Print model the p-values
+print("P-values:")
+print(paste("Linear Regression:", lm_p_value))
+print(paste("Tweedie Regression:", tweedy_p_value))
+print(paste("Tweedie Regression 2 :", summary(tweedie_model.2)$coefficients["score_data$groups2", "Pr(>|t|)"]))
+print(paste("Tweedie Regression 3:", summary(tweedie_model.3)$coefficients["score_data$groups2", "Pr(>|t|)"]))
+print(paste("Tweedie Regression 4:", summary(tweedie_model.4)$coefficients["score_data$groups2", "Pr(>|t|)"]))
+
+print(paste("Quantile Regression:", p_value_groups2_quantile))
+
+print(paste("wilcoxon:",wilcoxon_result$p.value))
+
+```
+## Different Runs
+
+[1] "P-values:"
+[1] "Linear Regression: 0.131811448264589"
+[1] "Tweedie Regression: 0.128300461805298"
+[1] "Tweedie Regression 2 : 0.124800031276357"
+[1] "Tweedie Regression 3: 0.123348061888567"
+[1] "Tweedie Regression 4: 0.126926746066999"
+[1] "Quantile Regression: 0.332359002537367"
+[1] "wilcoxon: 0.180556930110569"
+
+[1] "P-values:"
+[1] "Linear Regression: 0.0038693137098985"
+[1] "Tweedie Regression: 0.00301175316866842"
+[1] "Tweedie Regression 2 : 0.00214240749103708"
+[1] "Tweedie Regression 3: 0.00189515702769465"
+[1] "Tweedie Regression 4: 0.0025921108813993"
+[1] "Quantile Regression: 0.0848589332913616"
+[1] "wilcoxon: 0.00195712449424303"
+
+[1] "P-values:"
+[1] "Linear Regression: 0.0171658845281005"
+[1] "Tweedie Regression: 0.0179279882723774"
+[1] "Tweedie Regression 2 : 0.0171414976224537"
+[1] "Tweedie Regression 3: 0.0177462914377656"
+[1] "Tweedie Regression 4: 0.0169905739634292"
+[1] "Quantile Regression: 0.0142087635670598"
+[1] "wilcoxon: 0.0210767943514473"
