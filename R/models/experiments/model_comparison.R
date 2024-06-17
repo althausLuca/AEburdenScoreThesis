@@ -1,5 +1,5 @@
-source("../../Scenarios.R")
-source("../run_methods.R")
+source("R/Scenarios.R")
+source("R/methods/run_methods.R")
 
 
 scenario <- SCENARIOS$equal

@@ -141,50 +141,7 @@ plot(p_mat[,1][order(p_mat[,1])])
 vcov(mymodel)
 summary(mymodel)
 
-"experiemental"
-1/(1+exp(-(0.2412 + -1.1856)))
 
-"control"
-1/(1+exp(-(0.2412)))
-
-
-trial <- trial_data_1
-
-sample.c  <- sample(trial$Score[trial$Group=="control"],100, replace=T)
-sample.t  <- sample(trial$Score[trial$Group=="treatment"],100, replace=T)
-
-
-sample <-  trial[sample(1:200,replace=T),]
-
-
-
-get_permutation_estimate <- function(trial){
-  trial$Score <- sample(trial$Score,200, replace=F) #null distribution
-
-  model <- gamlss(Score ~ Group, sigma.formula = ~ Group, nu.formula = ~ Group,
-         family=ZAGA ,data=trial)
-
-  logit_inv <- function(x){1/(1+exp(-x))}
-  model_summary <- summary(model)
-
-  mu_est.c <- model_summary[1,1]
-  mu_est.t <- mu_est.c +  model_summary[1,2]
-
-  nu_est.c <- model_summary[1,5]
-  nu_est.t <- nu_est.c + model_summary[1,6]
-
-  mu_est.c <- exp(mu_est.c)
-  mu_est.t <- exp(mu_est.t)
-
-  nu_est.c <- logit_inv(nu_est.c)
-  nu_est.t <- logit_inv(nu_est.t)
-
-  mean_est.c <- (1-nu_est.c)*mu_est.c
-  mean_est.t <- (1-nu_est.t)*mu_est.t
-
-  #estimate 0 distribution for mean_est.c-mean_est.t
-  return(mean_est.c-mean_est.t)
-}
 
 
 

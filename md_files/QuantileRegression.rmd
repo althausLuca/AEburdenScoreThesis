@@ -14,7 +14,7 @@ knitr::opts_knit$set(root.dir = here::here())
 
 source("../R/AdvereEvents/AdverseEvents.R")
 source("R/Scenarios.R")
-source("../R/methods/run_methods.R")
+source("../R/methods/run_models.R")
 ```
 
 

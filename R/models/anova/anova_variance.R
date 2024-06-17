@@ -1,5 +1,5 @@
 source("R/Scenarios.R")
-source("../run_methods.R")
+source("R/methods/run_methods.R")
 
 library(ggplot2)
 library(car)

@@ -75,8 +75,14 @@ p_value_plot_handler <- function() {
 source("R/methods/run_methods.R")
 source("R/methods/methods_settings.R")
 
-load("perm_test_longer.RData")
-model_file <- "Scenario_3_k_1.5_l_3.5.csv"
+#load("perm_test_longer.RData")
+#model_file <- "Scenario_3_k_1.5_l_3.5.csv"
+
+#load("perm_test_shorter.RData")
+#model_file <- "Scenario_2_k_1.5_s_0.5.csv"
+
+
+
 
 p_values <- get_values(model_file, "p_value")
 
@@ -95,3 +101,35 @@ handler$add(permutations_tests, "Permutation Test", "red")
 handler$plot()
 
 print(plot)
+
+
+load("R/trials/trial_loader.R")
+
+
+#model_file <- "Scenario_2_k_1.5_s_0.5.csv"
+model_file <- "Scenario_1_k_1.5.csv"
+
+trial_data <- load_trial_data(model_file)
+
+group_size <- 20
+
+anova_30 <- function(trial){
+  trial <- trial[c(1:group_size,101:(100+group_size)),]
+  lm_model <- lm(Score ~ Group, data = trial)
+  summary <- summary(lm_model)
+  p_value <- summary$coefficients[2, 4]
+  return(p_value)
+}
+
+p_values_30 <- unlist(trial_data$apply_to_each(anova_30))
+
+handler <- p_value_plot_handler()
+
+handler$add(p_values_30, paste0("Anova ",group_size), "red")
+handler$plot()
+
+trial_1 <- trial_data$trials[[1]]
+trial_1 <- trial_1[c(1:10,101:110),]
+lm_model <- lm(Score ~ Group, data = trial_1)
+summary(lm_model)
+

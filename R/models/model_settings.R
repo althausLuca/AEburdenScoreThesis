@@ -1,4 +1,4 @@
-# Define constants for the different methods used in the geheration and analysis
+# Define constants for the different models used in the geheration and analysis
 LOG_ANOVA <- "anova"
 LM <- "lm"
 TWEEDIE <- "tweedie"

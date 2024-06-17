@@ -50,6 +50,9 @@ plot_distritubtions <- function(data, models, parameters) {
 
 }
 
+
+
+
 plot_estimate_by_std <- function(data) {
   lm_effects <- unlist(data$lm$estimate)
   lm_std_err <- unlist(data$lm$std_err)

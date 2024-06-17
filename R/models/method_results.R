@@ -1,4 +1,4 @@
-source("methods_settings.R")
+source("model_settings.R")
 source("R/methods/run_methods.R")
 
 file_dir <- "data/model_results/"

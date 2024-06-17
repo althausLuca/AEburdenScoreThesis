@@ -6,7 +6,6 @@ result_path <- "data/trials/"
 #' @return A list of score data frames
 #' @seealso \code{\link{simulate_scenario}} for simulating a scenario
 #' @seealso \code{\link{simulate_scores_from_scenario}} for simulating a scenario
-#'
 load_trial_data <- function(file_name) {
   # check if it is not a string
   file_path <- paste0(result_path, file_name)
@@ -70,6 +69,25 @@ load_trial_data <- function(file_name) {
 
   # Return a list with n_trials, the trial data frames, and the all_data function
   return(list(n_trials = n_trials, trials = trials, all_data = all_data , apply_to_each = apply_to_each))
+}
+
+
+
+#' Load a subsample form trial data
+trial_sub_sampler <- function(trial, group_size=30){
+  ref_group <- "control"
+
+  ref_incdices <- which(ref_group == trial$Group)[1:group_size]
+  treatment_indices <- which(ref_group != trial$Group)[1:group_size]
+
+  indices_to_keep <- c(ref_incdices,treatment_indices)
+
+  print(length(indices_to_keep))
+
+  trial <- trial[indices_to_keep,]
+
+  return(trial)
+
 }
 
 

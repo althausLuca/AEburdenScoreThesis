@@ -31,7 +31,7 @@ if (!require(gamlss)) {
 library(gamlss)
 
 # Load the data
-load("../../../inflated_gamma.RData")
+load("R/methods/inflated_gamma.RData")
 
 # Initialize the list to store trial mu estimates
 
