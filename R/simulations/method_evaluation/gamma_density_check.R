@@ -9,7 +9,7 @@ source("R/trials/trial_simulation.R")
 link_power <- 1
 file <- "Scenario_2_k_1.5_s_0.5.csv"
 
-trial_data <- load_trial_data(file)
+trial_data <- get_trial_data(file)
 
 trial <- trial_data$trials[[5]] # get one trial
 

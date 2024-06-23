@@ -3,7 +3,7 @@ source("R/methods/run_methods.R")
 
 trials_file <- "Scenario_2_k_1.5_s_0.5.csv"
 
-trial_data <- load_trial_data(trials_file)
+trial_data <- get_trial_data(trials_file)
 trial_data$n_trials
 
 xi_values <- c(1.1, 1.7, 2)
@@ -79,6 +79,9 @@ profile_results_df$xi <- profile_results_df$xi[order(profile_results_df$xi)]
 plot(profile_results_df$xi)
 significant_indices <- seq_along(profile_results_df$p_value)[profile_results_df$p_value < 0.05]
 points(significant_indices, profile_results_df$xi[significant_indices] , col = "red")
+
+
+
 
 
 

@@ -10,7 +10,7 @@ source("zero_inflated_gamma_functions.R")
 file <- "Scenario_2_k_1.5_s_0.5.csv"
 
 # Load trial data
-trial_data <- load_trial_data(file)
+trial_data <- get_trial_data(file)
 
 n_sim <- 10000
 

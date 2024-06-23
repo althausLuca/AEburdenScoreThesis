@@ -1,3 +1,10 @@
+# install all required libraries
+
+
+#dependening on your R version you may need:
+#install.packages("remotes")
+#remotes::install_version("Matrix", version = "1.6-0", repos = "https://cloud.r-project.org/")
+
 #Required packages
 install.packages("quantreg")
 install.packages("dplyr")
@@ -10,7 +17,7 @@ install.packages("e1071")
 install.packages("here") # for Rmd directory setting
 install.packages("statmod")
 install.packages("tidyverse")
-install.packages("testthat ")
+install.packages("testthat")
 install.packages("gridExtra")
 install.packages("ggbreak")
 install.packages("gamlss")
@@ -20,5 +27,5 @@ install.packages("latex2exp")
 #roxygen2::roxygenise(".") #TODO test why this runs code
 
 
-dir.create("data/trials" , recursive = TRUE)
+dir.create("data_old/trials", recursive = TRUE)
 dir.create("model_results/trials" , recursive = TRUE)

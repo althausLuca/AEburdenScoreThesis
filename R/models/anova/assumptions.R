@@ -7,7 +7,7 @@ library(dplyr)
 source("R/trials/trial_simulation.R" )
 
 file_name <- "Scenario_2_k_1.5_s_0.5.csv"
-score_data <- load_trial_data(file_name)
+score_data <- get_trial_data(file_name)
 #score_data <- score_data$all_data()
 score_data <- score_data$trials[[1]]
 # Basic summary and visualization of data

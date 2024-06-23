@@ -1,7 +1,7 @@
 
 source("R/methods/run_methods.R")
 
-data_folder <- "data/trials"
+data_folder <- "../../data_old/trials"
 # get all the files in the foldeer that contain _k_ and _s_
 files.4 <- list.files(data_folder, pattern = "Scenario_4")
 files.4 <- files.4[grepl("_k_", files.4)]

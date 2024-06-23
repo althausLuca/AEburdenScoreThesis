@@ -4,7 +4,7 @@ source("R/trials/trial_simulation.R")
 
 # Load data
 trials_file <- "Scenario_2_k_1.5_s_0.5.csv"
-trial_data <- load_trial_data(trials_file)
+trial_data <- get_trial_data(trials_file)
 quantiles <- c(0.05, 0.25, 0.5, 0.75, 0.95)
 
 # Prepare the results dataframe

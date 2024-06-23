@@ -5,7 +5,7 @@ library(tweedie)
 source("R/trials/trial_simulation.R")
 
 file <- "Scenario_3_k_1.5_l_3.5.csv"
-trial_data <- load_trial_data(file)
+trial_data <- get_trial_data(file)
 
 var.powers <- c(seq(1.1,2,by=0.1))
 

@@ -1,13 +1,11 @@
-result_path <- "data/trials/"
+source("R/trials/trial_data.R")
 
 
-#' Load a trial data from a scenario
-#' @param scenario A scenario name or object with attribute name
-#' @return A list of score data frames
-#' @seealso \code{\link{simulate_scenario}} for simulating a scenario
-#' @seealso \code{\link{simulate_scores_from_scenario}} for simulating a scenario
-load_trial_data <- function(file_name) {
-  # check if it is not a string
+#' Get the file path for a given file name
+#' @param file_name A file name or path
+#' @param result_path The path to the result files (defualts to "data/trials/")
+#' @return The file path for the given file name or stop if the file does not exist
+get_file_path <- function(file_name,result_path= "data/trials/") {
   file_path <- paste0(result_path, file_name)
   if (!endsWith(file_name, ".csv")) {
     file_path <- paste0(result_path, file_name, ".csv")
@@ -15,6 +13,36 @@ load_trial_data <- function(file_name) {
   if (!file.exists(file_path)) {
     stop(paste0("File not found for ", file_name))
   }
+  return(file_path)
+}
+
+#' Get the control and treatment scores for the current trial
+#' @param i The trial number
+#' @param trial_data The trial data frame
+#' @return A data frame with the scores and group names
+#' @seealso \code{\link{get_trial_data}} for loading trial data
+get_lines <- function(i, trial_data) {
+  group1 <- trial_data[2 * i - 1, 1]
+  group2 <- trial_data[2 * i, 1]
+  group1_scores <- as.numeric(trial_data[2 * i - 1,-1])
+  groups2_scores <- as.numeric(trial_data[2 * i,  - 1])
+
+  trial_df <- data.frame(
+    Score = c(group1_scores, groups2_scores),
+    Group = rep(c(group1, group2), each = length(group1_scores))
+  )
+}
+
+
+#' Load a trial data from a scenario
+#' @param scenario A scenario name or object with attribute name
+#' @return A list of score data frames
+#' @seealso \code{\link{simulate_scenario}} for simulating a scenario
+#' @seealso \code{\link{simulate_scores_from_scenario}} for simulating a scenario
+get_trial_data <- function(file_name , result_path = "data/trials/") {
+
+  # check if it is not a string
+  file_path <- get_file_path(file_name ,result_path =  result_path)
 
   trial_data <- read.table(file_path, header = FALSE, sep = "," )
   n_trials <- floor(nrow(trial_data)) / 2
@@ -24,56 +52,18 @@ load_trial_data <- function(file_name) {
 
   # Loop over the trials
   for (i in seq_len(n_trials)) {
-    # Get the control and treatment scores for the current trial
-    group1 <- trial_data[2 * i - 1, 1]
-    group2 <- trial_data[2 * i, 1]
-    group1_scores <- unlist(trial_data[2 * i - 1,-1])
-    groups2_scores <- unlist(trial_data[2 * i,  - 1])
-
-    # Create a data frame with the scores and their corresponding group
-    trial_df <- data.frame(
-      Score = c(group1_scores, groups2_scores),
-      Group = rep(c(group1, group2), each = length(group1_scores))
-    )
-
     # Store the trial data frame in the list
-    trials[[i]] <- trial_df
+    trials[[i]] <- get_lines(i,trial_data)
   }
-
-  # Function to concatenate all trial data frames
-  all_data <- function() {
-    do.call(rbind, trials)
-  }
-
-  #function to apply a function to each trial
-  apply_to_each <- function(func, as.df = FALSE, limit = NULL, ...) {
-    # Determine the number of trials to process
-    n <- if (is.null(limit)) length(trials) else min(limit, length(trials))
-
-    # Initialize an empty list to store results
-    results <- vector("list", n)
-
-    # Loop over the trials and apply the function
-    for (i in seq_len(n)) {
-      results[[i]] <- func(trials[[i]], ...)
-    }
-
-    # Combine results into a data frame if as.df is TRUE
-    if (as.df) {
-      results <- do.call(rbind, results)
-    }
-
-    return(results)
-  }
-
-
-  # Return a list with n_trials, the trial data frames, and the all_data function
-  return(list(n_trials = n_trials, trials = trials, all_data = all_data , apply_to_each = apply_to_each))
+  return(init_trial_data(trials))
 }
 
 
 
 #' Load a subsample form trial data
+#' @param trial A trial data frame
+#' @param group_size The number of subjects per group
+#' @return A subsample of the trial data
 trial_sub_sampler <- function(trial, group_size=30){
   ref_group <- "control"
 
@@ -84,6 +74,7 @@ trial_sub_sampler <- function(trial, group_size=30){
 
   print(length(indices_to_keep))
 
+  print(trial)
   trial <- trial[indices_to_keep,]
 
   return(trial)
@@ -92,24 +83,24 @@ trial_sub_sampler <- function(trial, group_size=30){
 
 
 
-#' Load  trial data from shorter scenario
+#' Load  trial data from the scenariio with shorter gap times
 load_shorter_trials <- function(){
   file <- "Scenario_2_k_1.5_s_0.5.csv"
-  trial_data <- load_trial_data(file)
+  trial_data <- get_trial_data(file)
   return(trial_data)
 }
 
-#' Load trial data from longer scenario
+#' Load trial data from the scenario with longer event times
 load_longer_trials <- function(){
   file <- "Scenario_3_k_1.5_l_3.5.csv"
-  trial_data <- load_trial_data(file)
+  trial_data <- get_trial_data(file)
   return(trial_data)
 }
 
-#' Load trial data from longer scenario
+#' Load trial data from the scenario with equal parameters
 load_equal_trials <- function(){
   file <- "Scenario_1_k_1.5.csv"
-  trial_data <- load_trial_data(file)
+  trial_data <- get_trial_data(file)
   return(trial_data)
 }
 

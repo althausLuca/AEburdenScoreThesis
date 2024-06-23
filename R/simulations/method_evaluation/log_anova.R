@@ -3,7 +3,7 @@ source("R/methods/run_methods.R")
 
 trials_file <- "Scenario_2_k_1.5_s_0.5.csv"
 
-trial_data <- load_trial_data(trials_file)
+trial_data <- get_trial_data(trials_file)
 trial_data$n_trials
 
 results_df <- data.frame(

@@ -60,11 +60,11 @@ simulate_group <- function(AEs, size = 100, susceptibility_parameter = list("gam
 #' (e.g. c("constant") ,c("gamma", 1.5))
 #' @param death A boolean indicating whether to simulate death events (default = FALSE)
 #' @param save A boolean indicating whether to save the results to a RDS file (default = TRUE)
-simulate_trials_from_scenario <- function(scenario, n_sim = 1000,
+simulate_trials_from_scenario <- function(scenario, n_sim = 5000,
                                           susceptibility_parameter = list("gamma", 1.5),
                                           death = FALSE,
                                           save = TRUE,
-                                          file_name = NULL) {
+                                          file_name = NULL, trial_group_size = 100) {
   print("generating scores")
   print(scenario$name)
 
@@ -91,8 +91,8 @@ simulate_trials_from_scenario <- function(scenario, n_sim = 1000,
   # Loop through simulations
   for (index in 1:n_sim) {
     # Simulate control and treatment scores
-    control_scores <- simulate_group(control_AEs, size = 100, susceptibility_parameter = susceptibility_parameter, max_time = 180)$scores
-    treatment_scores <- simulate_group(treatment_AEs, size = 100, susceptibility_parameter = susceptibility_parameter, max_time = 180)$scores
+    control_scores <- simulate_group(control_AEs, size = trial_group_size, susceptibility_parameter = susceptibility_parameter, max_time = 180)$scores
+    treatment_scores <- simulate_group(treatment_AEs, size = trial_group_size, susceptibility_parameter = susceptibility_parameter, max_time = 180)$scores
 
     # Write results to CSV file as one row
     write.table(as.data.frame(rbind(control_scores, treatment_scores), row.names = c("control", "treatment")),

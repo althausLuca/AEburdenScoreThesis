@@ -2,10 +2,10 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 
-source("R/methods/run_methods.R")
+source("R/models/run_models.R")
 
-trials_folder <- "data/trials"
-model_folder <- "data/model_results"
+trials_folder <- "../../../data_old/trials"
+model_folder <- "data/model_results_"
 
 
 trial_files <- list.files(trials_folder, full.names = FALSE)
@@ -74,33 +74,4 @@ labels = lapply(sort(unique(results_long$model)), function(x) TeX(map_labels(x))
   guides(fill=guide_legend(override.aes=list(size=15)))
 g
 ggsave("shorter_p_values.pdf", plot = g, width = 10, height = 5)
-
-source("R/trials/trial_simulation.R")
-source("R/Scenarios.R")
-
-
-n_sim <- 5000
-n_subjects <- 100 # per group
-scenario_name <- "Scenario_2"
-shorter <- 0.5
-k <- 1.5
-scenario <- load_scenario(scenario_name, shorter = shorter)
-
-control.group <- simulate_group(scenario$control, size = n_sim, susceptibility_parameter = list("gamma", k), max_time = 180)
-treatment.group <- simulate_group(scenario$treatment, size = n_sim, susceptibility_parameter = list("gamma", k), max_time = 180)
-
-source("R/trials/analysis/plots.R")
-
-dev.off()
-
-
-
-hist_ylim <- 240
-box_lim <- 800
-hist_and_box_plot(treatment.group$scores, treatment.group$n_events
-   , file_name = paste0("pres_scenario_2_treatment_s_", shorter, ".pdf") , main="Experimental Group"
-   ,hist_lim = 100 , box_lim = box_lim , hist_y_lim = hist_ylim , bin_width = 1)
-hist_and_box_plot(control.group$scores, control.group$n_events , box_lim = box_lim  , hist_y_lim = hist_ylim
-   , file_name = paste0("pres_scenario_2_control_s_", shorter, ".pdf")
-   , hist_lim = 100 , main="Control Group", bin_width = 1)
 

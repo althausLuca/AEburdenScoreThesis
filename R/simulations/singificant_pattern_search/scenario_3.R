@@ -1,7 +1,7 @@
 source("R/methods/run_methods.R")
 source("R/helpers.R")
 
-trials_folder <- "data/trials"
+trials_folder <- "../../../data_old/trials"
 model_folder <- "data/model_results"
 
 trial_files <- list.files(trials_folder, full.names = FALSE)

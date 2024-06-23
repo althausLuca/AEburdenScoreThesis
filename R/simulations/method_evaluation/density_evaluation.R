@@ -15,7 +15,7 @@ source("R/simulations/method_evaluation/density_methods.R")
 
 # Load trial data
 file <- file
-trial_data <- load_trial_data(file)
+trial_data <- get_trial_data(file)
 
 group <- "control"
 

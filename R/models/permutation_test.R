@@ -19,7 +19,7 @@ get_trial_means <- function(trial){
 #' @param n_sim The number of simulations to perform
 #' @param return_permutations A boolean indicating whether to return  all permutations (default = TRUE)
 #'
-mean_permutation_test <- function(trial, n_sim=10000 , return_permutations=T){
+mean_permutation_test <- function(trial, n_permutations=10000 , return_permutations=T , n_sim = n_permutations){
   if(return_permutations){
     trial_permutation_means <- vector("list", n_sim) # Initialize list to store results
   }

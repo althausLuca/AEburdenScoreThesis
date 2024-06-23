@@ -7,7 +7,7 @@ source("R/simulations/method_evaluation/density_methods.R")
 file <- "Scenario_2_k_1.5_s_0.5.csv"
 
 # Load trial data
-trial_data <- load_trial_data(file)
+trial_data <- get_trial_data(file)
 
 trial_data_1 <- trial_data$trials[[3]]
 

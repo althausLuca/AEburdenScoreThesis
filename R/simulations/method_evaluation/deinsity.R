@@ -6,8 +6,8 @@ source("R/trials/trial_simulation.R")
 
 
 file <- "Scenario_3_k_1.5_l_3.5.csv"
-trial_data <- load_trial_data(file)$all_data()
-trial_data <- load_trial_data(file)$trials[[1]]
+trial_data <- get_trial_data(file)$all_data()
+trial_data <- get_trial_data(file)$trials[[1]]
 # tweedie
 var.power <- 1.85
 link_power = 1

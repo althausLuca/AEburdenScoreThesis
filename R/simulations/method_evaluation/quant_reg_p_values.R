@@ -13,7 +13,7 @@ source("R/trials/trial_simulation.R")
 #Scenario_1_k_1.5.csv
 trial_file <- "Scenario_2_k_1.5_s_0.5.csv"
 
-trial_data <- load_trial_data(trial_file)
+trial_data <- get_trial_data(trial_file)
 
 q <- 0.95
 first_trial <- trial_data$trials[[1]]
