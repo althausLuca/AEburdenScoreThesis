@@ -15,7 +15,7 @@ init_trial_data <- function(trials_list){
 
 
     if(use_parallel){
-      num_cores <- detectCores() - 1
+      num_cores <- detectCores() - as.numeric(Sys.getenv("N_FREE_THREADS",1))
       # Try parallel processing
       results <- try(mclapply(seq_len(n), function(i) func(trials_list[[i]], ...), mc.cores = num_cores), silent = TRUE)
       if (inherits(results, "try-error")) {

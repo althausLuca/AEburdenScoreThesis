@@ -1,6 +1,6 @@
 # Load required functions
 source("R/trials/trial_simulation.R")
-source("R/simulations/method_evaluation/density_methods.R")
+source("../../models/density_methods.R")
 
 #"Scenario_3_k_1.5_l_3.5.csv"
 #Scenario_2_k_1.5_s_0.5.csv

@@ -6,12 +6,18 @@ source("R/trials/trial_data.R")
 #' @param result_path The path to the result files (defualts to "data/trials/")
 #' @return The file path for the given file name or stop if the file does not exist
 get_file_path <- function(file_name,result_path= "data/trials/") {
-  file_path <- paste0(result_path, file_name)
   if (!endsWith(file_name, ".csv")) {
-    file_path <- paste0(result_path, file_name, ".csv")
+    file_name <- paste0(file_name, ".csv")
   }
+  file_path <- paste0(result_path, file_name)
+
   if (!file.exists(file_path)) {
-    stop(paste0("File not found for ", file_name))
+    # check if in file_path + longer_event_durations or shorter_gap_times
+    file_path <- paste0(result_path, "longer_event_durations/", file_name)
+    if (!file.exists(file_path)) {
+      file_path <- paste0(result_path, "shorter_gap_times/", file_name)
+      if(!file.exists(file_path))  stop(paste0("File not found for ", file_name))
+    }
   }
   return(file_path)
 }

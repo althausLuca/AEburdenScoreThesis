@@ -1,7 +1,7 @@
 #' Inspect how the power parameter \xi and dispersion parameter \phi differ between
 #' the full model and the individual groups
 
-source("R/simulations/method_evaluation/density_methods.R")
+source("../../models/density_methods.R")
 
 
 source("R/trials/trial_simulation.R")

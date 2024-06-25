@@ -33,7 +33,8 @@ map_labels <- function(x) {
     quantile_regression = "Median Regression",
     log_anova_c_0.001 = "Log-ANOVA $$$_{c=0.001}$",
     log_anova_c_1 = "Log-ANOVA $$$_{c=1}$",
-    permutation_test = "Permutation Test"
+    permutation_test = "Permutation Test" ,
+    wilcoxon = "Wilcoxon Test"
   )
   if (x %in% names(model_labels)) {
     return(model_labels[[x]])

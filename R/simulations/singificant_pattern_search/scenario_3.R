@@ -87,7 +87,7 @@ g  <- g +  scale_color_manual(values = colors,
                         labels = lapply(sort(unique(results_long$model)), function(x) TeX(map_labels(x))))+
   guides(fill=guide_legend(override.aes=list(size=15)))
 g
-ggsave("longer_p_values.pdf", plot = g, width = 10, height = 5)
+ggsave("../../../longer_p_values_.pdf", plot = g, width = 10, height = 5)
 
 
 

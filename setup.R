@@ -22,6 +22,7 @@ install.packages("gridExtra")
 install.packages("ggbreak")
 install.packages("gamlss")
 install.packages("latex2exp")
+install.packages("reshape2")
 
 # Load documentation
 #roxygen2::roxygenise(".") #TODO test why this runs code

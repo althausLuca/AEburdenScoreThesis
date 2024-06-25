@@ -10,7 +10,7 @@ rm(dt)
 
 # Load required functions
 source("R/trials/trial_simulation.R")
-source("R/simulations/method_evaluation/density_methods.R")
+source("../../models/density_methods.R")
 
 #file.edit("R/simulations/method_evaluation/density_methods.R")
 

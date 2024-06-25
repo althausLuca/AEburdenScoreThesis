@@ -1,63 +1,11 @@
 source("R/models/analysis_and_comparison/p_value_plot.R")
 
 
-init_model_results <- function(result_list) {
-  if(is.data.frame(result_list)){
-   return(init_model_results_2(result_list))
+init_model_results <- function(model_results) {
+  if(!is.data.frame(model_results)){
+    model_results <- data.frame(t(sapply(model_results , function(x) data.frame(x))))
   }
-
-  # Get the first entry from the result list
-  first_entry <- result_list[[1]]
-  model_names <- names(first_entry)
-
-  # Function to get values based on a pattern
-  get_values <- function(pattern = "p_value") {
-    # Check which models contain the pattern in their names
-    models_contain_value <- sapply(model_names, function(model_name) {
-      pattern %in% names(first_entry[[model_name]])
-    })
-
-    n_models_with_value <- sum(models_contain_value)
-    if (n_models_with_value == 0) {
-      print(paste0("No model with the given pattern: ", pattern))
-      return(NULL)
-    }
-
-    # Initialize a data frame to store the values
-    df <- data.frame(matrix(nrow = length(result_list), ncol = n_models_with_value))
-    colnames(df) <- model_names[models_contain_value]
-
-    # Loop through the result list and extract values
-    for (i in seq_along(result_list)) {
-      entry <- result_list[[i]]
-      values <- sapply(model_names[models_contain_value], function(model_name) {
-        entry[[model_name]][[pattern]]
-      })
-      df[i, ] <- values
-    }
-
-    return(df)
-  }
-
-
-  p_value_plot <- function (save = NULL) {
-
-    p_values <- get_values("p_value")
-    p_value_plot <- p_value_plot_handler()
-    for(name in model_names){
-      p_value_plot$add(p_values[[name]], name)
-    }
-    if(!is.null(save)){
-      p_value_plot$save(save)
-    }
-    result <- p_value_plot$plot()
-    return(result)
-  }
-
-  return(list( results = result_list ,
-               get_values = get_values ,
-               model_names = model_names,
-               p_value_plot = p_value_plot))
+  return(init_model_results_2(model_results))
 }
 
 init_model_results_2 <- function(result_df) {
@@ -78,22 +26,20 @@ init_model_results_2 <- function(result_df) {
       pattern %in% model_attributes[[model_name]]
     })
 
-    n_models_with_value <- sum(models_contain_value)
-    if (n_models_with_value == 0) {
+    models_with_value <- model_names[models_contain_value]
+
+    if (length(models_with_value) == 0) {
       print(paste0("No model with the given pattern: ", pattern))
       return(NULL)
     }
 
-    # Initialize a data frame to store the values
-    df <- data.frame(matrix(nrow = nrow(result_df), ncol = n_models_with_value))
-    colnames(df) <- model_names[models_contain_value]
+    columns_to_select <- sapply(models_with_value, function(model_name) {
+      paste0(model_name, ".", pattern)
+    })
+    result <- result_df[, columns_to_select]
+    names(result) <- models_with_value
 
-    # Loop through the result list and extract values
-    for (model_name in model_names[models_contain_value]) {
-        df[, model_name] <- result_df[, paste0(model_name, ".", pattern)]
-    }
-
-    return(df)
+    return(result)
   }
 
 

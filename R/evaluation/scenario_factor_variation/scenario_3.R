@@ -7,20 +7,16 @@ source("R/models/model_results.R")
 source("R/models/model_settings.R")
 source("R/helpers.R")
 
-model_folder <- "data/models/shorter_gap_times"
+model_folder <- "data/models/longer_event_durations"
 
 model_files <- list.files(model_folder, full.names = TRUE)
 
-# model_file <- model_files[5]
-# load(model_file , env = tmp <- new.env())
-# model_results <- init_model_results(tmp$model_result_list)
-# model_results$model_names
-# p_values <- model_results$get_values("p_value")
-# colMeans(p_values < 0.05)
+# remove files with Tmp in it ...
+model_files <- model_files[!grepl("Tmp", model_files)]
 
 df <- NULL
 for (model_file in model_files) { # takes a while
-  scenario_factor <- get_prefixed_number(model_file, "_s_")
+  scenario_factor <- get_prefixed_number(model_file, "_l_")
   print(scenario_factor)
   load(model_file , env = tmp <- new.env())
   model_results <- init_model_results(tmp$model_result_list)
@@ -29,7 +25,7 @@ for (model_file in model_files) { # takes a while
   df <- rbind(df, c(scenario_factor = scenario_factor , sig_p_values))
 }
 df <- data.frame(df)
-df <- df[order(df$scenario_factor),]
+df <- df[order(df$scenario_factor,decreasing = TRUE),]
 
 # Convert the data to a long format suitable for plotting with ggplot
 results_long <- pivot_longer(df,cols=-scenario_factor , names_to = "model", values_to = "value")
@@ -57,13 +53,12 @@ g  <- g +  scale_color_manual(values = unlist(sapply(sort(unique(results_long$mo
   guides(color=guide_legend(nrow=2, byrow=TRUE)) +
   theme(legend.position='top') +
   geom_vline(xintercept = base_level, linetype="dotted",color = "black") +
-  annotate("text", x = base_level+1.3, y = 0.92, label = "Equal expected \n gap time", angle = 0, color = "black" , size = 5)
-g
-g <-g+ annotate("segment", x = 6.5, y = 0.05, xend = 1, yend = 0.05,
-             arrow = arrow(type = "closed", length = unit(0.02, "npc")))+
-  annotate("text", x = 3.7, y = 0.075, label = "More frequent events in the experimental group", angle = 0, color = "black" , size = 4)
+  annotate("text", x = base_level+0.8, y = 0.92, label = "Equal expected \n even duration", angle = 0, color = "black" , size = 5)
+g <-g+ annotate("segment", x =5.8, y = 0.05, xend = 1.7, yend = 0.05,
+                arrow = arrow(type = "closed", length = unit(0.02, "npc")))+
+  annotate("text", x = 3.7, y = 0.08, label = "Longer event durations in the experimental group", angle = 0, color = "black" , size = 4)
 g
 
-g
-ggsave("shorter_p_values.pdf", plot = g, width = 10, height = 5)
+
+ggsave("longer_p_values.pdf", plot = g, width = 10, height = 5)
 
