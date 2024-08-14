@@ -1,5 +1,7 @@
-source("R/models/run_models.R")
-
+source("R/models/models.R")
+source("R/models/fit_models.R")
+source("R/models/model_coefficients.R")
+source("R/models/model_metrics.R")
 
 test_data <- data.frame(
   Score = c(
@@ -9,10 +11,44 @@ test_data <- data.frame(
   Group = c(rep("control", 15), rep("treatment", 15))
 )
 
-run_log_anova(test_data, delta = 0.001)$p_value
-run_anova(test_data)$p_value
-run_tweedie(test_data, var.power = 1.65, link.power = 0)$p_value
-run_qauntile_regression(test_data)$p_value
+
+# Run the models
+
+model <- ANOVA()
+model <- fit_model(model,test_data)
+extract_coefficients(model)
+extract_metrics(model)
+
+model <- LOG_ANOVA(delta=0.001)
+model <- fit_model(model,test_data)
+extract_coefficients(model)
+extract_metrics(model)
+
+model <- LOG_ANOVA(delta=1)
+model <- fit_model(model,test_data)
+extract_coefficients(model)
+extract_metrics(model)
+
+model <- TWEEDIE_REGRESSION()
+model <- fit_model(model,test_data)
+extract_coefficients(model)
+extract_metrics(model)
+
+
+model <- QUANTILE_REGRESSION()
+model <- fit_model(model,test_data)
+extract_coefficients(model)
+extract_metrics(model)
+
+model <- WILCOXON_TEST()
+model <- fit_model(model,test_data)
+extract_coefficients(model)
+extract_metrics(model)
+
+model <- PERMUTATION_TEST()
+model <- fit_model(model,test_data)
+extract_coefficients(model)
+extract_metrics(model)
 
 
 

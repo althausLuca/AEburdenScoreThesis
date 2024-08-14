@@ -1,12 +1,5 @@
 source("R/helpers.R")
 
-# Define constants for the different models used in the geheration and analysis
-LOG_ANOVA <- "log_anova"
-LM <- "anova"
-TWEEDIE <- "tweedie"
-QUANTILE_REGRESSION <- "quantile_regression"
-PERMUTATION_TEST <- "permutation_test"
-WILCOXON_TEST <- "wilcoxon"
 
 
 get_color <- function(model_name) {

@@ -66,3 +66,11 @@ for(trial in trial_data$trials){
   print(results)
   save(file=output_file_name , list = ls()[!ls() %in%  initial_vars])
 }
+
+
+x <- 3
+class(x) <- c("test",class(x),"test")
+class(x)
+df <- data.frame("a" = x)
+df[1,1]
+class(df[1,1])

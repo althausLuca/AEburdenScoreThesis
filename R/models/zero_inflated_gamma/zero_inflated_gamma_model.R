@@ -1,14 +1,20 @@
 library(gamlss)
 
+source("R/trials/trial_loader.R")
+source("R/models/fit_models.R")
+source("R/models/model_coefficients.R")
+source("R/models/model_metrics.R")
 
-extract_gamlss_p_values <- function(gamlss_model) {
-  model_summary <- summary(gamlss_model)
 
-  mu_p_val <- model_summary[2, 4]
-  sigma_p_val <- model_summary[4, 4]
-  nu_p_pal <- model_summary[6, 4]
+trial_data <- load_shorter_trials()
+trial <- trial_data$trials[[1]]
 
-  p_values <- list("mu" = mu_p_val, "sigma" = sigma_p_val, "nu" = nu_p_pal)
-  return(p_values)
-}
+model_fit <- fit_zero_inflated_gamma_model(trial)
+
+
+summary(model_fit)
+AIC(model_fit)
+coefficients <- extract_coefficients(model_fit)
+p_values <- extract_gamlss_p_values(model_fit)
+
 

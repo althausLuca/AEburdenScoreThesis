@@ -29,3 +29,10 @@ run_tweedie <- function(score_data, var.power = 1.5, link.power = 0) {
 
   return(results)
 }
+
+
+a = 3
+class(a) <- "tweedie_glm_"
+
+class(list(a)[[1]])
+

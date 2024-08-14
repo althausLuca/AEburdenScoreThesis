@@ -7,25 +7,15 @@
 #' tweedie_glm_ - tweedie model
 #' quantile_regression_ - quantile regression model
 #' zero_inflated_gamma_ - zero inflated gamma model
-#' @return The fitted model
 
 
 library(gamlss)
+library(quantreg)
+library(tweedie)
+library(statmod)
 source("R/models/model_settings.R")
-
-check_data <- function(trial) {
-  if (!("Score" %in% names(trial))) {
-    stop("Score column not found in trial data")
-  }
-  if (!("Group" %in% names(trial))) {
-    stop("Group column not found in trial data")
-  }
-  trial$Group <- as.factor(trial$Group)
-  trial$Group <- relevel(trial$Group, ref = "control")
-  return(trial)
-}
-
-
+source("R/models/model_helpers.R")
+source("R/models/permutation_test.R")
 
 fit_tweedie_model <- function(trial, link_power = 0, var_power = 1.5, xi = var_power) {
   trial <- check_data(trial)
@@ -40,13 +30,12 @@ fit_tweedie_model <- function(trial, link_power = 0, var_power = 1.5, xi = var_p
   tweedie_model <- glm(trial$Score ~ trial$Group, family =
     tweedie(var.power = xi, link.power = link_power), control = glm.control(maxit = 100))
 
-  #add class tweedie_glm to model
+  #add class tweedie_glm_ to model
   class(tweedie_model) <- c("tweedie_glm_", class(tweedie_model))
   tweedie_model$xi <- xi # add xi to the model
 
   return(tweedie_model)
 }
-
 
 fit_anova_model <- function(trial) {
   trial <- check_data(trial)
@@ -55,7 +44,7 @@ fit_anova_model <- function(trial) {
   return(anova_model)
 }
 
-fit_log_anova_model <- function(trial, c = 1 , delta=c) {
+fit_log_anova_model <- function(trial, c = 1, delta = c) {
   trial <- check_data(trial)
   trial$log_score <- log(trial$Score + delta)
   log_anova_model <- lm(trial$log_score ~ trial$Group)
@@ -74,33 +63,111 @@ fit_quantile_regression_model <- function(trial, tau = 0.5) {
   return(quantile_regression_model)
 }
 
-fit_zero_inflated_gamma_model <- function(trial) {
+fit_zero_inflated_gamma_model <- function(trial, sigma_per_group = FALSE) {
   trial <- check_data(trial)
-  model <- gamlss(Score ~ Group, sigma.formula = ~Group, nu.formula = ~Group,
-                  family = ZAGA, data = trial)
-  return(model) #has class gamlss
+  gamlss_model_ <- tryCatch({
+    if (sigma_per_group) {
+      gamlss(Score ~ Group, sigma.formula = ~Group, nu.formula = ~Group,
+             family = ZAGA, data = trial)
+    } else {
+      gamlss(Score ~ Group, sigma.formula = ~1, nu.formula = ~Group,
+             family = ZAGA, data = trial)
+    }
+  }, error = function(e) {
+    # Return an error classed object if the model fitting fails
+    structure(list(message = e$message), class = c("gamlss_error", "model_error"))
+  })
+
+
+  return(gamlss_model_) #has class gamlss
 }
 
 
-  get_model_fit_f <- function(model_type , args = NULL) {
-  if (is.null(args)){
-    args <- list()
-  }
+wilcox_test <- function(trial) {
+  trial <- check_data(trial)
+  wilcox_test <- wilcox.test(trial$Score ~ trial$Group)
 
-  model_fit_f <- switch(model_type,
-         "anova" = fit_anova_model ,
-         "log_anova" = fit_log_anova_model,
-         "tweedie" = fit_tweedie_model,
-         "quantile_regression" = fit_quantile_regression_model,
-         "zero_inflated_gamma" = fit_zero_inflated_gamma_model
-  )
-  if (is.null(model_fit_f)) {
-    stop("Model type not found")
-  }
-  return(function(trial, ...) {
-    additional_args <- list(...)
-    all_args <- modifyList(list(trial = trial), args)
-    all_args <- modifyList(all_args, additional_args)
-    do.call(model_fit_f, all_args)
-  }) # returning a function
+  class(wilcox_test) <- c("wilcoxon_test", class(wilcox_test))
+  return(wilcox_test)
 }
+
+permutation_test <- function(trial, n_permutations = 10000) {
+  trial <- check_data(trial)
+
+  permutation_test <- mean_permutation_test(trial, n_permutations)
+
+  class(permutation_test) <- c("permutation_test", class(permutation_test))
+
+  return(permutation_test)
+}
+
+
+fit_zero_inflated_gamma_model.2 <- function(trial) {
+  trial <- check_data(trial)
+
+  ## logistic regression
+  trial_zero_one <- trial
+  trial_zero_one$Score <- ifelse(trial$Score > 0, 1, 0)
+  logistic_glm <- glm(Score ~ Group, family = binomial, data = trial_zero_one)
+
+  ## gamma regression on the positive part of the data
+  non_zero_trial <- trial[trial$Score > 0,]
+  gamma_glm <- glm(Score ~ Group, family = Gamma(link = "log"), data = non_zero_trial)
+
+  result <- list(logistic_glm = logistic_glm, gamma_glm = gamma_glm)
+  class(result) <- c("zero_inflated_gamma_model", "glm")
+  return(result) #has class gamlss
+}
+
+
+#' @title Fit model
+#' @description Fit a model to the data
+#' @param model The model to fit to the data, this is a list of model settings and the model containing the class
+#' @param trial The trial data
+#' @return The fitted model
+fit_model <- function(model, trial, ...) {
+  UseMethod("fit_model")
+}
+
+#' @title Log anova model
+fit_model.log_anova_model <- function(model, trial, ...) {
+  fit_log_anova_model(trial, delta = model$delta)
+}
+
+#' @title Anova model
+fit_model.anova_model <- function(model, trial, ...) {
+  fit_anova_model(trial)
+}
+
+#' @title Tweedie model
+fit_model.tweedie_glm_model <- function(model, trial, ...) {
+  fit_tweedie_model(trial, link_power = model$link_power, var_power = model$var_power)
+}
+
+#' @title Quantile regression model
+fit_model.quantile_regression_model <- function(model, trial, ...) {
+  fit_quantile_regression_model(trial, tau = model$tau)
+}
+
+#' @title Zero inflated gamma model
+fit_model.zero_inflated_gamma_model <- function(model, trial, ...) {
+  fit_zero_inflated_gamma_model(trial, sigma_per_group = model$sigma_per_group)
+}
+
+#' @title Wilcoxon test
+fit_model.wilcoxon_test <- function(model, trial, ...) {
+  wilcox_test(trial)
+}
+
+#' @title Permutation test
+fit_model.permutation_test <- function(model, trial, ...) {
+  permutation_test(trial, n_permutations = model$n_permutations)
+}
+
+
+
+
+
+
+
+

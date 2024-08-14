@@ -1,5 +1,6 @@
 library(quantreg)
 
+
 run_qauntile_regression <- function(score_data, se="ker") {
   #https://cran.r-project.org/web/packages/quantreg/vignettes/rq.pdf
   quantile_regression_model <- rq(score_data$Score ~ score_data$Group)
@@ -10,7 +11,6 @@ run_qauntile_regression <- function(score_data, se="ker") {
   lower_bound <- summary(quantile_regression_model)$coefficients[2, 2]
   upper_bound <- summary(quantile_regression_model)$coefficients[2, 3]
 
-  ## add try catch block
   sid_quantille_summary <-  tryCatch({
     summary(quantile_regression_model, se = se)
   }, error = function(e) {

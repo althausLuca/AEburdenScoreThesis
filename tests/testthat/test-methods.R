@@ -1,13 +1,16 @@
+
 test_that("compilation without errors", {
-  expect_no_error(run_qauntile_regression(test.df))
-  expect_no_error(run_tweedie(test.df))
-  expect_no_error(run_anova(test.df))
-  expect_no_error(run_lm(test.df))
+  setwd("../..")
+  source("R/models/fit_models.R", local = TRUE)
+  source("R/models/model_CDFs.R", local = TRUE)
+
+  source("tests/test_data.R", local = TRUE)
+  models <- source("R/models/models.R", local = TRUE)$value
+
+  for (model_f in models) {
+    model <- model_f()
+    expect_no_error(fitted_model <- fit_model(model , test_trial), message  = paste0("Error in ", model$name ))
+    expect_no_error(model_distribution(fitted_model,x = seq(-1,100,by=0.1) ), message  = paste0("Error in ", model$name ))
+  }
 })
 
-test_that("simulate methods and check output", {
-  expect_true(all(c("model", "p_value", "estimate", "std_err") %in% names(  run_lm(test.df))))
-    expect_true(all(c("model", "AIC", "p_value", "std_err", "t_value", "estimate", "link.power", "var.power") %in% names(  run_tweedie(test.df))))
-    expect_true(all(c("model", "p_value", "estimate", "std_err") %in% names(  run_anova(test.df))))
-    expect_true(all(c("model", "p_value", "estimate", "std_err") %in% names(  run_qauntile_regression(test.df))))
-})

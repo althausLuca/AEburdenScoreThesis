@@ -36,7 +36,7 @@ init_trial_data <- function(trials_list){
 
     # Combine results into a data frame if as.df is TRUE
     if (as.df) {
-      results <- do.call(rbind, results)
+      results <- data.frame(do.call(rbind, results))
     }
 
     return(results)

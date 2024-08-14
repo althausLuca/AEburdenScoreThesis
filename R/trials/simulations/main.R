@@ -40,8 +40,6 @@ theoretical_prob <- function(mean1,mean2,mean3){
     return(joint_probability)
 }
 
-#theoretical_prob(160, 160, 120)
-
 AEs <- AEs.3
 print(sapply(AEs, function(x) x$gap_time))
 

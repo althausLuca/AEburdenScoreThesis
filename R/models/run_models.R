@@ -1,47 +1,27 @@
-# This file combines  all the model running functions
-# Models are:
-# - Linear regression
-# - Tweedie regression
-# - Quantile regression
-# - Log-ANOVA
+#' This file combines  all the model running functions
+#' Models are:
+#' - Linear regression
+#' - Tweedie regression
+#' - Quantile regression
+#' - Log-ANOVA
 
-library(readr)
-
-source("R/models/anova/anova_model.R")
-source("R/models/tweedie/tweedie_model.R")
-source("R/models/quantile_regression/quantile_regression_model.R")
+source("R/models/models.R")
+source("R/models/fit_models.R")
+source("R/models/model_metrics.R")
+source("R/models/model_coefficients.R")
 source("R/models/model_settings.R")
-source("R/models/permutation_test.R")
-source("R/models/wilcoxon_test.R")
 
-#' Define a function to check if the data is valid a dataframe with the columns Score and Group
-#' If score and group is used rename them to Score and Group
-#' Check that the score are all non negative and the Group is only "control" or "treatment"
-#' Parameters:  score_data A data frame with two columns Scores and Group
-check_data <- function(score_data) {
-  if (!"Score" %in% colnames(score_data)) {
-    if ("score" %in% colnames(score_data)) {
-      colnames(score_data)[colnames(score_data) == "score"] <- "Score"
-    }else {
-      stop("The data does not contain a column named 'Score'")
-    }
-  }
-  if (!"Group" %in% colnames(score_data)) {
-    if ("group" %in% colnames(score_data)) {
-      colnames(score_data)[colnames(score_data) == "group"] <- "Group"
-    }else {
-      stop("The data does not contain a column named 'Group'")
-    }
-  }
-  if (!all(score_data$Score >= 0)) {
-    stop("The data contains negative scores")
-  }
-  if (!all(score_data$Group %in% c("control", "treatment"))) {
-    stop("The data contains invalid group names")
-  }
-  return(score_data)
-}
 
+DEFAULT_MODELS  <- list(
+    ANOVA = ANOVA(),
+    LOG_ANOVA = LOG_ANOVA(delta=0.001),
+    LOG_ANOVA = LOG_ANOVA(delta=1),
+    TWEEDIE = TWEEDIE_REGRESSION(),
+    QUANTILE_REGRESSION = QUANTILE_REGRESSION(),
+    WILCOXON_TEST = WILCOXON_TEST(),
+    PERMUTATION_TEST = PERMUTATION_TEST(),
+    ZERO_INFLATED_GAMMA = ZERO_INFLATED_GAMMA()
+)
 
 #' Define a function to run standard linear regression, Tweedie regression, and Quantile regression
 #' Parameters:
@@ -50,31 +30,24 @@ check_data <- function(score_data) {
 #' - var.power:  var.power for the tweedy regression (default 1.5)
 #' - delta: A small number to add to the scores to avoid log(0) in log anova model
 #' Returns a list containing results from different models i.e., lm , tweedie, quantile_regression, log_anova, wilcoxon test
-run_models <- function(score_data, link.power = 0, var.power = 1.65,
-                       delta = 0.001,
-                       include_permutation_test = F , n_permutations = 10000) {
-  score_data <- check_data(score_data)
+run_models <- function(trial, models= DEFAULT_MODELS ) {
+  trial <- check_data(trial)
   results <- list()
 
-  ## Linear model/ANOVA
-  results[[LM]] <- run_anova(score_data)
+  for(model in models){
+    model_name <- model$repr
+    model_fit <- fit_model(model, trial)
+    coefs <- extract_coefficients(model_fit)
+    metrics <- extract_metrics(model_fit)
 
-  ## Log-ANOVA model
-  results[[paste0(LOG_ANOVA, "_c_0.001")]] <- run_log_anova(score_data, delta = 0.001)
-  results[[paste0(LOG_ANOVA, "_c_1")]] <- run_log_anova(score_data, delta = 1)
+    # merge metrics and coefs
+    for(metric_name in names(metrics)){
+      coefs[[metric_name]] <- metrics[[metric_name]]
+    }
 
-  if (include_permutation_test) {
-    results[[PERMUTATION_TEST]] <- mean_permutation_test(score_data, n_permutations = n_permutations, return_permutations = F)
+    results[[model_name]] <- coefs
   }
 
-  ## Tweedie model
-  results[[TWEEDIE]] <- run_tweedie(score_data, var.power = var.power, link.power = link.power)
-
-  ## Quantile regression
-  results[[QUANTILE_REGRESSION]] <- run_qauntile_regression(score_data)
-
-  ## Wilcoxon test
-  results[[WILCOXON_TEST]] <- run_wilcoxon_test(score_data)
   return(results)
 }
 

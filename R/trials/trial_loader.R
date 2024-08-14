@@ -105,7 +105,7 @@ load_longer_trials <- function(){
 
 #' Load trial data from the scenario with equal parameters
 load_equal_trials <- function(){
-  file <- "Scenario_1_k_1.5.csv"
+  file <- "Scenario_3_k_1.5_l_1.csv"
   trial_data <- get_trial_data(file)
   return(trial_data)
 }

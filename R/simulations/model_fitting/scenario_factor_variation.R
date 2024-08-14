@@ -23,7 +23,7 @@ for (trial_file in trial_files) {
   print(trial_data$n_trials)
 
   model_result_list <- trial_data$apply_to_each(function(trial) {
-    return(run_models(trial, include_permutation_test = TRUE, n_permutations = 10000))
+    return(run_models(trial))
   }, use_parallel = TRUE)
   print(length(model_result_list))
 

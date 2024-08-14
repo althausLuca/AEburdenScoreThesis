@@ -1,4 +1,3 @@
-library(tibble)
 source("R/scenario_configuration.R")
 
 #' Define an Adverse Event
@@ -13,8 +12,7 @@ source("R/scenario_configuration.R")
 #' @param severity_probability Probability distribution for event severity (vector of probabilities)
 #'
 #' @return An event object with defined parameters
-AE <- function(event_duration, time_between_events,
-               severity_probability = SEVERITY_PROBABILITIES$equal,
+AE <- function(event_duration, time_between_events, severity_probability ,
                time_to_first_event = time_between_events) {
   event <- list(
     time_to_first_event = time_to_first_event,
