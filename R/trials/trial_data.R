@@ -13,11 +13,18 @@ init_trial_data <- function(trials_list){
     # Determine the number of trials to process
     n <- if (is.null(limit)) length(trials_list) else min(limit, length(trials_list))
 
+    cat("\n")
+
+    func_silent <- function (i,trial, ...) {
+    { sink("/dev/null") ;    result <- func(trial, ...) ; sink();}
+      cat("\r Processing trial ", i, " of ", n, " trials")
+      return(result)
+    }
 
     if(use_parallel){
       num_cores <- detectCores() - as.numeric(Sys.getenv("N_FREE_THREADS",1))
       # Try parallel processing
-      results <- try(mclapply(seq_len(n), function(i) func(trials_list[[i]], ...), mc.cores = num_cores), silent = TRUE)
+      results <- try(mclapply(seq_len(n), function(i) func_silent(i,trials_list[[i]], ...), mc.cores = num_cores), silent = TRUE)
       if (inherits(results, "try-error")) {
         print("Parallel processing failed, using sequential processing")
         use_parallel <- FALSE
@@ -29,7 +36,7 @@ init_trial_data <- function(trials_list){
 
       # Loop over the trials and apply the function
       for (i in seq_len(n)) {
-        results[[i]] <- func(trials_list[[i]], ...)
+       results[[i]] <- func_silent(i,trials_list[[i]], ...)
       }
     }
 
@@ -69,3 +76,4 @@ list.trial_data <- function(trial_data,...){
   print("list.trial_data conversion")
   return(trial_data$trials)
 }
+

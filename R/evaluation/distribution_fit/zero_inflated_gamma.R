@@ -1,39 +1,62 @@
 source("R/models/models.R")
-scenario <- "longer"
+source("R/trials/trial_loader.R")
+x <- source("R/evaluation/distribution_fit/x.R")$value
 
-model_name.1 <- ZERO_INFLATED_GAMMA(sigma_per_group = TRUE)$repr
-model_name.2 <- ZERO_INFLATED_GAMMA(sigma_per_group = FALSE)$repr
-
-model_name <- model_name.2
-data_path <- paste0("data/distributions/",scenario, "/")
-plot_path <- paste0("plots/distributions/", scenario, "/")
+trial_data <- load_longer_trials()
 
 
-file.1 <- paste0(data_path, "/", model_name.1, ".RData")
-file.2 <- paste0(data_path, "/", model_name.2, ".RData")
+scenario_name <- trial_data$name
+result_directory <- paste0("results/CDF/", scenario_name, "/")
 
-load(file.1)
-# distribution_results.1 <- distribution_results
-load(file.2)
-# distribution_results.2 <- distribution_results
+model <- ZERO_INFLATED_GAMMA()
+CDFS <- trial_data$apply_to_each(function(trial) model$fit(trial)$get_CDFs(x))
+
+control_densities <- lapply(CDFS, function(CDF) CDF$control)
+treatment_densities <- lapply(CDFS, function(CDF) CDF$treatment)
+
+Y_control <- trial_data$all_data()[trial_data$all_data()$Group == "control", 1]
+Y_treatment <- trial_data$all_data()[trial_data$all_data()$Group == "treatment", 1]
 
 
-names(distribution_results)
+dir.create(result_directory, recursive = TRUE, showWarnings = FALSE)
+file_path <- paste0(result_directory, model$repr, ".RData")
 
-class(distribution_results$control_results)
+save(control_densities, treatment_densities, Y_control, Y_treatment, x,
+     file = file_path)
 
-all_data <- distribution_results$trial_data$all_data()
+load(file_path)
 
-source("R/models/analysis_and_comparison/distribution_plot.R")
+source("R/evaluation/analysis_and_comparison/distribution_plot.R")
 
-control_data <- all_data[all_data$Group == "control", 1]
 
-p_control <- distributions_plot(t(distribution_results$control_results), distribution_results$x,control_data, "Control", "ECDF" ,text_size_factor=1)
+plot_path <- paste0("plots/model_distributions/", scenario_name, "/")
+dir.create(plot_path, recursive = TRUE, showWarnings = FALSE)
 
-treatment_data <- all_data[all_data$Group == "treatment", 1]
-p_treatment <- distributions_plot(t(distribution_results$treatment_results), distribution_results$x, treatment_data, "Treatment", "ECDF",text_size_factor=1)
+p <- distributions_plot(control_densities, x, Y_control, paste0("Log-Anova Distributions"))
+ggsave(paste0(plot_path, model$repr, "_control.pdf"), plot = p, width = 8, height = 5)
 
-# store the plots as pdf
-ggsave(paste0(plot_path, model_name, "_distributions_control_f.pdf"), plot = p_control, width = 10 , height = 8)
-ggsave(paste0(plot_path, model_name, "_distributions_treatment_f.pdf"), plot = p_treatment, width = 10, height = 8)
+p <- distributions_plot(treatment_densities, x, Y_treatment, "Log-Anova Distributions")
 
+ggsave(paste0(plot_path, model$repr, "_treatment.pdf"), plot = p, width = 8, height = 5)
+
+
+f <- function() {
+  makeActiveBinding("a", i <- i + 0, env = GlobalEnv)
+}
+
+f <- function() {
+  i <- 0
+  makeActiveBinding("counter", function(a = NULL) {
+    i <<- i + 0.5
+    if (!is.null(a)) {i <<- a}
+    return(i)
+  }
+    , env = .GlobalEnv)
+}
+
+f()
+counter
+
+counter = 0
+counter
+counter = 10

@@ -26,18 +26,7 @@ model_distribution <- function(model, x, ...) {
 }
 
 
-### Define the distribution functions for each model
-lm_distribution <- function(mu, sigma, x) {
-  pnorm_results <- pnorm(x, mean = mu, sd = sigma)
-  return(pnorm_results)
-}
-
-log_anova_distribution <- function(mu, sigma, c, x) {
-  log_x <- ifelse(x + c > 0, log(x + c), -Inf)
-
-  dnorm_results <- pnorm(log_x, mean = mu, sd = sigma)
-  return(dnorm_results)
-}
+### Define the distribution functions for each mode
 
 tweedie_distribution <- function(mu, phi, xi, x) {
   ptweedie_results <- ptweedie(x, mu = mu, phi = phi, power = xi)
@@ -49,10 +38,6 @@ zero_inflated_gamma_distribution <- function(mu, sigma, nu, x) {
   return(dgamma_results)
 }
 
-# zero_inflated_gamma_model.2 <- function(nu, shape, scale, x) {
-#   result <- ifelse(x < 0, 0, ifelse(x == 0, nu, nu + (1 - nu) * pgamma(x, shape = shape, scale = scale)))
-#   return(result)
-# }
 
 
 # Define the model_distribution functions for each model class
@@ -64,7 +49,7 @@ model_distribution.tweedie_glm_ <- function(model, x) { get_model_distributions(
 
 model_distribution.gamlss <- function(model, x) { get_model_distributions(model, zero_inflated_gamma_distribution, x) }
 
-model_distribution.zero_inflated_gamma_model <- function(model, x) { get_model_distributions(model, zero_inflated_gamma_model.2, x) }
+
 
 model_distribution.default <- function(model, x) {
   print(paste0("Model: ", model$name, " with class ", class(model), " does not have a distribution function defined."))

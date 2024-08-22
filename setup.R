@@ -23,10 +23,11 @@ install.packages("ggbreak")
 install.packages("gamlss")
 install.packages("latex2exp")
 install.packages("reshape2")
+install.packages("fitdistrplus")
+install.packages("glmmTMB")
 
 # Load documentation
 #roxygen2::roxygenise(".") #TODO test why this runs code
 
 
-dir.create("data_old/trials", recursive = TRUE)
 dir.create("model_results/trials" , recursive = TRUE)

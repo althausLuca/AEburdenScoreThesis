@@ -37,19 +37,6 @@ extract_coefficients_ <- function(model, ...) {
   UseMethod("extract_coefficients_")
 }
 
-#' Function to extract coefficients from a linear model
-extract_coefficients_.lm <- function(model, ...) {
-  lm_model <- model
-
-  sigma <- summary(lm_model)$sigma
-
-  mu_control <- coef(lm_model)[1]
-  mu_treatment <- sum(coef(lm_model))
-
-  return(list(mu_control = mu_control,
-              mu_treatment = mu_treatment,
-              sigma = sigma))
-}
 
 #' Function to extract coefficients from a linear model
 extract_coefficients_.log_anova_ <- function(model, ...) {

@@ -8,14 +8,13 @@
 #' quantile_regression_ - quantile regression model
 #' zero_inflated_gamma_ - zero inflated gamma model
 
-
 library(gamlss)
 library(quantreg)
 library(tweedie)
 library(statmod)
 source("R/models/model_settings.R")
 source("R/models/model_helpers.R")
-source("R/models/permutation_test.R")
+source("../stat_tests/permutation_test.R")
 
 fit_tweedie_model <- function(trial, link_power = 0, var_power = 1.5, xi = var_power) {
   trial <- check_data(trial)
@@ -27,8 +26,8 @@ fit_tweedie_model <- function(trial, link_power = 0, var_power = 1.5, xi = var_p
     xi <- profile_result$xi.max
 
   }
-  tweedie_model <- glm(trial$Score ~ trial$Group, family =
-    tweedie(var.power = xi, link.power = link_power), control = glm.control(maxit = 100))
+  tweedie_model <- glm(trial$Score ~ trial$Group,
+                        family = tweedie(var.power = xi, link.power = link_power), control = glm.control(maxit = 100))
 
   #add class tweedie_glm_ to model
   class(tweedie_model) <- c("tweedie_glm_", class(tweedie_model))
@@ -63,27 +62,9 @@ fit_quantile_regression_model <- function(trial, tau = 0.5) {
   return(quantile_regression_model)
 }
 
-fit_zero_inflated_gamma_model <- function(trial, sigma_per_group = FALSE) {
-  trial <- check_data(trial)
-  gamlss_model_ <- tryCatch({
-    if (sigma_per_group) {
-      gamlss(Score ~ Group, sigma.formula = ~Group, nu.formula = ~Group,
-             family = ZAGA, data = trial)
-    } else {
-      gamlss(Score ~ Group, sigma.formula = ~1, nu.formula = ~Group,
-             family = ZAGA, data = trial)
-    }
-  }, error = function(e) {
-    # Return an error classed object if the model fitting fails
-    structure(list(message = e$message), class = c("gamlss_error", "model_error"))
-  })
 
-
-  return(gamlss_model_) #has class gamlss
-}
-
-
-wilcox_test <- function(trial) {
+## Tests
+wilcoxon_test <- function(trial) {
   trial <- check_data(trial)
   wilcox_test <- wilcox.test(trial$Score ~ trial$Group)
 
@@ -99,24 +80,6 @@ permutation_test <- function(trial, n_permutations = 10000) {
   class(permutation_test) <- c("permutation_test", class(permutation_test))
 
   return(permutation_test)
-}
-
-
-fit_zero_inflated_gamma_model.2 <- function(trial) {
-  trial <- check_data(trial)
-
-  ## logistic regression
-  trial_zero_one <- trial
-  trial_zero_one$Score <- ifelse(trial$Score > 0, 1, 0)
-  logistic_glm <- glm(Score ~ Group, family = binomial, data = trial_zero_one)
-
-  ## gamma regression on the positive part of the data
-  non_zero_trial <- trial[trial$Score > 0,]
-  gamma_glm <- glm(Score ~ Group, family = Gamma(link = "log"), data = non_zero_trial)
-
-  result <- list(logistic_glm = logistic_glm, gamma_glm = gamma_glm)
-  class(result) <- c("zero_inflated_gamma_model", "glm")
-  return(result) #has class gamlss
 }
 
 
@@ -156,18 +119,10 @@ fit_model.zero_inflated_gamma_model <- function(model, trial, ...) {
 
 #' @title Wilcoxon test
 fit_model.wilcoxon_test <- function(model, trial, ...) {
-  wilcox_test(trial)
+  wilcoxon_test(trial)
 }
 
 #' @title Permutation test
 fit_model.permutation_test <- function(model, trial, ...) {
   permutation_test(trial, n_permutations = model$n_permutations)
 }
-
-
-
-
-
-
-
-

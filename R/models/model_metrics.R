@@ -74,35 +74,3 @@ extract_metrics.wilcoxon_test <- function(wilcox_test_results, ...) {
   return(results)
 }
 
-
-extract_metrics.quantile_regression_ <- function(quantile_regression_model, ...) {
-  summary <- summary(quantile_regression_model)
-  estimate <- summary$coefficients[2, 1]
-
-  AIC <- AIC(quantile_regression_model)
-
-  ker.p_value <- tryCatch({
-    summary(quantile_regression_model, se = "ker")$coefficients[2, "Pr(>|t|)"]
-  }, error = function(e) {
-    NA
-  })
-  nid.p_value <- tryCatch({
-    summary(quantile_regression_model, se = "nid")$coefficients[2, "Pr(>|t|)"]
-  }, error = function(e) {
-    NA
-  })
-  boot.p_value <- tryCatch({
-    summary(quantile_regression_model, se = "boot")$coefficients[2, "Pr(>|t|)"]
-  }, error = function(e) {
-    NA
-  })
-
-  results <- list("AIC" = AIC,
-                  "p_value" = ker.p_value,
-                  "ker_p_value" = ker.p_value,
-                  "nid_p_value" = nid.p_value,
-                  "boot_p_value" = boot.p_value,
-                  "estimate" = estimate)
-  return(results)
-}
-

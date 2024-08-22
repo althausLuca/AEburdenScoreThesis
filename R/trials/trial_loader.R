@@ -93,6 +93,7 @@ trial_sub_sampler <- function(trial, group_size=30){
 load_shorter_trials <- function(){
   file <- "Scenario_2_k_1.5_s_0.5.csv"
   trial_data <- get_trial_data(file)
+  trial_data[["name"]] <- "shorter_gap_times"
   return(trial_data)
 }
 
@@ -100,6 +101,7 @@ load_shorter_trials <- function(){
 load_longer_trials <- function(){
   file <- "Scenario_3_k_1.5_l_3.5.csv"
   trial_data <- get_trial_data(file)
+  trial_data[["name"]] <- "longer_events"
   return(trial_data)
 }
 
@@ -107,6 +109,7 @@ load_longer_trials <- function(){
 load_equal_trials <- function(){
   file <- "Scenario_3_k_1.5_l_1.csv"
   trial_data <- get_trial_data(file)
+  trial_data[["name"]] <- "equal"
   return(trial_data)
 }
 

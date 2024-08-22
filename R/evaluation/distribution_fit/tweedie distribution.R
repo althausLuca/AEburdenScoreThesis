@@ -1,38 +1,27 @@
 
-
 source("R/trials/trial_loader.R")
-source("R/models/run_models.R")
-source("../../models/model_CDFs.R")
+source("R/models/models.R")
+x <- source("R/evaluation/distribution_fit/x.R")$value
 
 trial_data <- load_longer_trials()
 
-
-f <- 1/100
+model <- TWEEDIE_REGRESSION(xi = "infer")
 
 trial <- trial_data$trials[[5]]
-trial$Score <- trial$Score*f
-treatment_y <- trial$Score[trial$Group == "treatment"]
-control_y <- trial$Score[trial$Group == "control"]
 
-tweedie_model <- TWEEDIE_REGRESSION(var_power = 1.7 , link_power = 0)
-model <- fit_model(tweedie_model, trial)
+control_distributions <- vector("list", length(trial_data$trials))
+treatment_distributions <- vector("list", length(trial_data$trials))
 
-coefs <- split_model_coefficients(extract_coefficients(model))
-coefs
+for(trial_index in seq_along(trial_data$trials)){
+  trial <- trial_data$trials[[trial_index]]
+  model_fit <- model$fit(trial)
+  model_CDFs <- model_fit$get_CDFs(x)
+  treatment_CDF <- model_CDFs$treatment
+  control_CDF <- model_CDFs$control
+    treatment_distributions[[trial_index]] <- treatment_CDF
+    control_distributions[[trial_index]] <- control_CDF
+}
 
-treatment_coefs <- coefs$treatment
-control_coefs <- coefs$control
-
-
-
-x <- c(seq(-50,30,by=0.2),
-         seq(31,50,by=0.5),
-         seq(51,100, by=1),
-         seq(100,600,by=5))*f
-
-phi <- control_coefs$phi
-treatment_distribution <- model_distribution(model = model, mu=treatment_coefs$mu , phi=phi , xi=treatment_coefs$xi , x)
-control_distribution <- model_distribution(model = model, mu=control_coefs$mu , phi=phi , xi=control_coefs$xi , x)
 
 
 par(mfrow=c(2,1))

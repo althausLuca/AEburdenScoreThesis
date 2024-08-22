@@ -1,5 +1,5 @@
 source("R/trials/trial_loader.R")
-source("R/models/permutation_test.R")
+source("../stat_tests/permutation_test.R")
 
 print("Loading shorter trials")
 trial_data <- load_shorter_trials()
