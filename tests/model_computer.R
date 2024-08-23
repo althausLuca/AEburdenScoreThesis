@@ -13,7 +13,6 @@ init_model_computer <- function(trial_data, name = "model_computer") {
   result$model_metrics <- list()
   result$trial_data <- trial_data
   result$models <- list()
-  result$save <- save
 
   return(result)
 }
@@ -64,6 +63,35 @@ get_value <- function(model_computer, val = "p_value") {
   return(result)
 }
 
+library(profvis)
+
+#profile the code
+
+source("R/trials/trial_loader.R")
+trial_data <- load_shorter_trials()
+model_computer <- init_model_computer(trial_data, "test_test")
+
+source("R/models/models.R")
+
+profvis({
+  model_or_test <- ANOVA()
+
+  add_model(model_computer, model_or_test)
+  get_value(model_computer, "p_value")
+
+  model_or_test <- ZERO_INFLATED_GAMMA()
+  add_model(model_computer, model_or_test)
+
+  model_or_test <- WILCOXON_TEST()
+  add_model(model_computer, model_or_test)
+
+  model_or_test <- QUANTILE_REGRESSION()
+  add_model(model_computer, model_or_test)
+  save.model_computer(model_computer)
+
+  model_or_test <- PERMUTATION_TEST()
+  add_model(model_computer, model_or_test)
+})
 
 source("R/trials/trial_loader.R")
 trial_data <- load_shorter_trials()
