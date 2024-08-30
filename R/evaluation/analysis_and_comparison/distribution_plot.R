@@ -33,8 +33,8 @@ distributions_plot <- function(distributions, x, Y ,  distributions_title = "Dis
   combined_data <- rbind(melted_df, ecdf_data)
 
   p <- ggplot(combined_data, aes(x = x, y = value, linewidth  = line_type, color = line_type, group = interaction(trial, line_type))) +
-    geom_line(data = subset(combined_data, line_type == "Distributions" & x > 0), alpha = 0.1 ,linewidth =0.8 ) +
-    geom_line(data = subset(combined_data, line_type == "Distributions" & x <= 0), alpha = 0.1 ,linewidth =0.8 ) +
+    geom_line(data = subset(combined_data, line_type == "Distributions" & x > 0), alpha = 0.03 ,linewidth =0.12 ) +
+    geom_line(data = subset(combined_data, line_type == "Distributions" & x <= 0), alpha = 0.03 ,linewidth =0.12 ) +
     geom_line(data = subset(combined_data, line_type == "ECDF" & x > 0), linewidth = 0.3) +
     geom_line(data = subset(combined_data, line_type == "ECDF" & x <= 0), linewidth = 0.3) +
     theme_bw() +

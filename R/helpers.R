@@ -39,33 +39,3 @@ nested_list_to_data_frame <- function(lst, sep = ".") {
   return(df)
 }
 
-
-dict <- function(..., default = NULL) {
-  input_vec <- list(...)
-  #call  <<- match.call()
-
-  #expr <- '\\b[a-zA-Z_][a-zA-Z0-9_]*\\b(?=\\s*=\\s*(?!\\"))'
-  #matches <- regmatches(call, gregexpr(expr, call, perl = TRUE))[[1]] # get the names of the arguments not in quotes
-  g <- Vectorize(function(x) ifelse(is.character(y <- get0(x, ifnotfound = x)), y, x), USE.NAMES = FALSE)
-
-  names(input_vec) <- g(names(input_vec))
-
-  class(input_vec) <- "dict"
-  attr(input_vec, "default") <- default
-
-  return(input_vec)
-}
-
-# override [] for dict
-`[.dict` <- function(x, i, ...) {
-  if (is.character(i)) {
-    result <- x[[i]]
-  }
-  if (is.numeric(i)) {
-    result <- x[names(x) %in% i]
-  }
-  if (is.null(result)) {
-    result <- attr(x, "default")
-  }
-  return(result)
-}

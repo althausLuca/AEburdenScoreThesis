@@ -1,5 +1,4 @@
 source("R/trials/trial_loader.R")
-source("R/models/fit_models.R")
 trial_data <- load_longer_trials()
 
 trial.1 <- trial_data$trials[[1]]

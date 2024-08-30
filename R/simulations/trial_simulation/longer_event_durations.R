@@ -7,7 +7,8 @@ n_subjects <- 100 # per group
 scenario_name <- "Scenario_3"
 longer_factor <- 3.5
 k <- 1.5
-longer_factors <- seq(0.5, 5, by = 0.5)
+
+longer_factors <- c(10,5,3.5,2.5,1.25,1,1/1.25,1/2.5,1/3.5, 1/5,1/10)
 
 for (longer_factor in longer_factors) {
 

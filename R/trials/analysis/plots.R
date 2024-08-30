@@ -78,5 +78,6 @@ hist_and_box_plot <- function(scores, n_events = NULL, save = TRUE, include_zero
     dev.off()
   }
   # reset layout
+  par(mfrow = c(1, 1))
   layout(1)
 }

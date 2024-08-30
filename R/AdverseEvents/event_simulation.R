@@ -103,7 +103,6 @@ get_event_duration <- function(mean_duration) {
   # ceiling(rexp(1, 1 / mean_duration))
   #
   shape <- ifelse(exists("duartion_shape_"), duartion_shape_, 9)
-  print("shape")
   print(shape)
   result <- rgamma(1,shape=shape, scale=mean_duration/shape) #rexp(1, 1 / mean_duration)
   return(result)

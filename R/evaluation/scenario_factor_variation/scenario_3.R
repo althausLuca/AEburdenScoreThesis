@@ -3,75 +3,87 @@ library(dplyr)
 library(tidyr)
 library(latex2exp)
 
-source("R/models/model_results.R")
-source("R/models/model_settings.R")
-source("R/helpers.R")
+source("R/models_and_tests/model_computer.R")
 
-model_folder <- "data/models/longer_event_durations"
-
+model_folder <- "results/longer_event_durations"
 model_files <- list.files(model_folder, full.names = TRUE)
 
-# remove files with Tmp in it ...
-model_files <- model_files[!grepl("Tmp", model_files)]
+source("R/helpers.R")
+
 
 df <- NULL
 for (model_file in model_files) { # takes a while
   scenario_factor <- get_prefixed_number(model_file, "_l_")
   print(scenario_factor)
-  load(model_file, env = tmp <- new.env())
-  model_results <- init_model_results(tmp$model_result_list)
-  p_values <- model_results$get_values("p_value")
+  model_computer <- load_model_computer(model_file)
 
-  # p_values["nu"] <- model_results$get_values("nu_p_value")
-  # p_values["sigma"] <- model_results$get_values("sigma_p_value")
-  # p_values["mu"] <- model_results$get_values("mu_p_value")
-
-  p_values["nid"] <- model_results$get_values("nid_p_value")
-  p_values["boot"] <- model_results$get_values("boot_p_value")
-  p_values["ker"] <- model_results$get_values("ker_p_value")
-
-
+  p_values <- get_value(model_computer, "p_value")
   sig_p_values <- colMeans(p_values < 0.05, na.rm = TRUE)
-  df <- rbind(df, c(scenario_factor = scenario_factor, sig_p_values))
+  print(sig_p_values)
+  for (model in names(sig_p_values)) {
+    df <- rbind(df, c(scenario_factor = scenario_factor, model = model, value = unname(sig_p_values[model])))
+  }
+
 }
 
+
 df <- data.frame(df)
+df$value <- as.numeric(df$value)
+df$scenario_factor <- as.numeric(df$scenario_factor)
 df <- df[order(df$scenario_factor, decreasing = FALSE),]
 
-# Convert the data to a long format suitable for plotting with ggplot
-results_long <- pivot_longer(df, cols = -scenario_factor, names_to = "model", values_to = "value")
-levels <- unique(results_long$scenario_factor)
-# base_level = level_index where level= 1
-base_level <- which(levels == 1)
-results_long$scenario_factor <- factor(results_long$scenario_factor, levels = levels)
-# Plot with line styles
-# Significant P-values For different Factors for Shorter Event Gap Times
-g <- ggplot(results_long, aes(x = scenario_factor, y = value, group = model)) +
-  geom_line(aes(color = model, linetype = model), size = 1.1) + # Map both color and linetype to model
-  labs(x = "Factor (Experimental/Control) for expected gap time between events", y = "Proportion of Significant P-values", title = "", color = "Model", linetype = "Model") +
+models_to_exclude <- c("tweedie_var_power_1.5_link_power_0")
+df <- df[!(df$model %in% models_to_exclude),]
+
+
+source("R/models_and_tests/model_settings.R")
+
+base_level <- 1.0
+
+model_names_ <- sort(unique(df$model))
+colors_ <- setNames(unlist(lapply(model_names_, get_color)), model_names_)
+line_types_ <- setNames(unlist(lapply(model_names_, get_line_style)), model_names_)
+markers_ <- setNames(unlist(lapply(model_names_, get_marker)), model_names_)
+labels_ <- lapply(model_names_, function(x) TeX(map_labels(x)))
+
+x_lab <- "Factor (Experimental/Control) for expected gap time between events"
+y_lab <- "Proportion of Significant P-values"
+g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
+  geom_line(aes(color = model, linetype = model), size = 1.1) +
+  geom_point(aes(color = model,  shape = model), size = 3, stroke = 2) +
+  scale_color_manual(values = colors_, labels = labels_, breaks = model_names_) +
+  scale_linetype_manual(values = line_types_, labels = labels_, breaks = model_names_) +
+  scale_shape_manual(values = markers_, labels = labels_, breaks = model_names_) +
+  labs(x = x_lab, y =y_lab, title = "") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5), legend.text = element_text(size = 15), legend.title = element_text(size = 0)) +
   theme(axis.text = element_text(size = 14, face = "bold"), axis.title = element_text(size = 17, face = "bold")) +
-  theme(legend.key.width = unit(1, "cm")) +
-  ylim(0, 1)
-g
-g <- g +
-  scale_color_manual(values = unlist(sapply(sort(unique(results_long$model)), function(x) get_color(x))),
-                     labels = lapply(sort(unique(results_long$model)), function(x) TeX(map_labels(x)))) +
-  scale_linetype_manual(values = setNames(1:length(unique(results_long$model)), unique(results_long$model)),
-                        labels = lapply(sort(unique(results_long$model)), function(x) TeX(map_labels(x)))) +
+  theme(legend.key.width = unit(2, "cm")) +
+  guides(color = guide_legend(nrow = 3, byrow = TRUE)) +
   guides(fill = guide_legend(override.aes = list(size = 15))) +
-  geom_point(aes(color = model), size = 2.5, show.legend = FALSE) +
-  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
   theme(legend.position = 'top') +
   geom_vline(xintercept = base_level, linetype = "dotted", color = "black") +
-  annotate("text", x = base_level + 1.2, y = 0.92, label = "Equal expected \n even duration", angle = 0, color = "black", size = 5)
-g <- g +
-  annotate("segment", x = 4.7, y = 0.03, xend = 6 + 3.5, yend = 0.03, ,
-           arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
-  annotate("text", x = 7, y = 0.06, label = "Longer event durations in the experimental group", angle = 0, color = "black", size = 4)
-g
+  annotate("text", x = base_level+0.3, y = 0.92, label = "Equal expected \n even duration", angle = 0, color = "black", size = 5)+
+  annotate("segment", x = 1.6, y = 0.03, xend = 2 + 5, yend = 0.03, arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
+  annotate("text", x = 3.5, y = 0.06, label = "Longer event durations in the experimental group", angle = 0, color = "black", size = 4)
+  levels <- unique(df$scenario_factor)
+  levels.r <- round(levels, 1)
+  levels <- ifelse(levels == levels.r, levels.r,levels)
+
+  values_to_remove <- c(0.5, 0.7, 0.9, 2/7)
+  levels <- levels[!sapply(levels, function(x) any(abs(x - values_to_remove) < 0.0001))]
+
+  transfromation <- scales::trans_new("log_reverse",
+                                      transform = function(x) log(x),
+                                      inverse = function(x) exp(x))
+
+  g <- g + scale_x_continuous(trans=transfromation , breaks = levels , labels = levels )
+  g
+ggsave("longer_p_values.pdf", plot = g, width = 15, height = 10)
 
 
-ggsave("longer_p_values.pdf", plot = g, width = 10, height = 5)
 
+
+
+
+model_computer

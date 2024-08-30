@@ -1,10 +1,6 @@
 # Load required functions
-
 source("R/trials/trial_loader.R")
-source("../../models/model_CDFs.R")
-source("R/models/model_coefficients.R")
-source("R/models/fit_models.R")
-source("R/models/models.R")
+source("R/models_and_tests/models_and_tests.R")
 
 
 trial_data <- load_shorter_trials()

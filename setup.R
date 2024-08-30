@@ -1,9 +1,8 @@
 # install all required libraries
-
-
 #dependening on your R version you may need:
 #install.packages("remotes")
 #remotes::install_version("Matrix", version = "1.6-0", repos = "https://cloud.r-project.org/")
+# the glmmTMB package requires the lognormal function which is available in version 1.1.9 and not below
 
 #Required packages
 install.packages("quantreg")
@@ -24,10 +23,17 @@ install.packages("gamlss")
 install.packages("latex2exp")
 install.packages("reshape2")
 install.packages("fitdistrplus")
-install.packages("glmmTMB")
+install.packages("glmmTMB") # version 1.1.9
+# remotes::install_version("glmmTMB", version = "1.1.9")
+
+
 
 # Load documentation
 #roxygen2::roxygenise(".") #TODO test why this runs code
 
 
-dir.create("model_results/trials" , recursive = TRUE)
+# Check if the version is correct
+if(!packageVersion("glmmTMB") >= "1.1.9"){
+  stop("Please install the correct version of glmmTMB otherwise the zero_inflated log_normalmodels will not work. \n
+       version must be >= 1.1.9 (lognormal() must be defined)")
+}

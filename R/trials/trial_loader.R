@@ -78,15 +78,11 @@ trial_sub_sampler <- function(trial, group_size=30){
 
   indices_to_keep <- c(ref_incdices,treatment_indices)
 
-  print(length(indices_to_keep))
-
-  print(trial)
   trial <- trial[indices_to_keep,]
 
   return(trial)
 
 }
-
 
 
 #' Load  trial data from the scenariio with shorter gap times

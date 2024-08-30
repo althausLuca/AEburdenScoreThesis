@@ -1,6 +1,6 @@
 
 source("R/trials/trial_loader.R")
-source("R/models/models.R")
+source("R/models_and_tests/models_and_tests.R")
 x <- source("R/evaluation/distribution_fit/x.R")$value
 
 trial_data <- load_longer_trials()

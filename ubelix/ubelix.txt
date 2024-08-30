@@ -1,0 +1,31 @@
+
+ssh la16e066@submit03.unibe.ch
+
+scp -r R/simulations/model_fitting la16e066@submit03.unibe.ch:thesis/R/simulations/model_fitting
+
+
+scp -r la16e066@submit03.unibe.ch:thesis/results results/
+
+
+squeue --job=32490640
+squeue --me
+
+scancel
+
+
+#Rbatch
+
+#! /bin/bash
+#SBATCH --time=03:00:00
+#SBATCH --mem-per-cpu=10G
+
+# Put your code below this line
+module load R
+R CMD BATCH --no-save --no-restore R/simulations/model_fitting/shorter_scenario_variation.R
+
+
+
+TRIAL_SUB_SELECTION = 1/5
+sbatch
+
+

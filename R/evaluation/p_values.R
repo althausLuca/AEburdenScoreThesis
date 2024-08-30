@@ -1,5 +1,5 @@
 source("R/models/model_results.R")
-source("R/models/model_settings.R")
+source("R/model_settings.R")
 library(ggplot2)
 
 

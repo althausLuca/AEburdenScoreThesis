@@ -1,4 +1,4 @@
-source("R/models/models.R")
+source("R/models_and_tests/models_and_tests.R")
 source("R/trials/trial_loader.R")
 x <- source("R/evaluation/distribution_fit/x.R")$value
 
