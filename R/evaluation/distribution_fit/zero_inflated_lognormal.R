@@ -3,10 +3,15 @@ source("R/trials/trial_loader.R")
 source("R/evaluation/distribution_fit/x.R")
 
 #ZERO_INFLATED_LOGNORMAL(),ANOVA() , LOG_ANOVA(c = 0.001), LOG_ANOVA(c = 1) ,
-models <- list(  TWEEDIE_REGRESSION(xi = 1.2),  TWEEDIE_REGRESSION(xi = 1.5),  TWEEDIE_REGRESSION(xi = 1.8)  )
+
+model <- ZERO_INFLATED_LOGNORMAL()
+model$repr <- "zero_inflated_lognormal_identity"
+models <- list( model)#, ANOVA() , LOG_ANOVA(c = 0.001), LOG_ANOVA(c = 1) , TWEEDIE_REGRESSION(xi = 1.2),  TWEEDIE_REGRESSION(xi = 1.5),  TWEEDIE_REGRESSION(xi = 1.8)  )
+
 
 trial_data <- load_longer_trials()
-scenario_name <- "longer_events"
+scenario_name <- "longer_events_identity_link"
+plot_path <- paste0("plots/model_distributions_/",scenario_name,"/")
 
 for(model in models){
 
@@ -20,7 +25,6 @@ Y_treatment <- trial_data$all_data()[trial_data$all_data()$Group == "treatment",
 
 
 source("R/evaluation/analysis_and_comparison/distribution_plot.R")
-plot_path <- paste0("plots/model_distributions/",scenario_name,"/")
 
 dir.create(plot_path, recursive = TRUE, showWarnings = FALSE)
 
@@ -35,6 +39,7 @@ ggsave(paste0(plot_path, model$repr, "_treatment.pdf"), plot = p, width = 8, hei
 
 trial_data <- load_shorter_trials()
 scenario_name <- "shorter_gap_times"
+plot_path <- paste0("plots/model_distributions_/",scenario_name,"/")
 
 for(model in models){
 
@@ -48,7 +53,6 @@ for(model in models){
 
 
   source("R/evaluation/analysis_and_comparison/distribution_plot.R")
-  plot_path <- paste0("plots/model_distributions/",scenario_name,"/")
 
   dir.create(plot_path, recursive = TRUE, showWarnings = FALSE)
 

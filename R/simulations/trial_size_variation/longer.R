@@ -4,7 +4,6 @@ source("R/simulations/default_models.R")
 
 dir.create("results/sample_size_variation" , recursive = TRUE)
 
-
 for (size in c(50, 30, 20)) {
   set.seed(7)
 

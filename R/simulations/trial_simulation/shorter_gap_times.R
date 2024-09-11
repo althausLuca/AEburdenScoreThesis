@@ -9,7 +9,8 @@ scenario_name <- "Scenario_2"
 shorter_factor <- 0.5
 k <- 1.5
 
-shorter_factors <- c(seq(0.1, 1, by = 0.1), 1.25, 2, 2.5, 5, 10)
+# shorter_factors <- c(1.25, 2, 2.5, 5, 10)
+shorter_factors <- 1/shorter_factors
 
 for (shorter_factor in shorter_factors) {
   set.seed(7)

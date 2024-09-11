@@ -8,7 +8,10 @@ source("R/models_and_tests/model_computer.R")
 model_folder <- "results/longer_event_durations"
 model_files <- list.files(model_folder, full.names = TRUE)
 
+store_name <- "longer_p_values.pdf"
+
 source("R/helpers.R")
+
 
 
 df <- NULL
@@ -32,7 +35,7 @@ df$value <- as.numeric(df$value)
 df$scenario_factor <- as.numeric(df$scenario_factor)
 df <- df[order(df$scenario_factor, decreasing = FALSE),]
 
-models_to_exclude <- c("tweedie_var_power_1.5_link_power_0")
+models_to_exclude <- c("tweedie_var_power_1.2_link_power_0" , "zero_inflate_wilcoxon", "quantile_regression_tau_0.5")
 df <- df[!(df$model %in% models_to_exclude),]
 
 
@@ -40,14 +43,15 @@ source("R/models_and_tests/model_settings.R")
 
 base_level <- 1.0
 
-model_names_ <- sort(unique(df$model))
+model_names_ <- order_models(unique(df$model))
 colors_ <- setNames(unlist(lapply(model_names_, get_color)), model_names_)
 line_types_ <- setNames(unlist(lapply(model_names_, get_line_style)), model_names_)
 markers_ <- setNames(unlist(lapply(model_names_, get_marker)), model_names_)
 labels_ <- lapply(model_names_, function(x) TeX(map_labels(x)))
 
-x_lab <- "Factor (Experimental/Control) for expected gap time between events"
+x_lab <- "Factor (Experimental/Control) for longer expected event durations"
 y_lab <- "Proportion of Significant P-values"
+
 g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   geom_line(aes(color = model, linetype = model), size = 1.1) +
   geom_point(aes(color = model,  shape = model), size = 3, stroke = 2) +
@@ -79,11 +83,4 @@ g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
 
   g <- g + scale_x_continuous(trans=transfromation , breaks = levels , labels = levels )
   g
-ggsave("longer_p_values.pdf", plot = g, width = 15, height = 10)
-
-
-
-
-
-
-model_computer
+ggsave(store_name, plot = g, width = 15, height = 10)

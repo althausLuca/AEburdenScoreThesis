@@ -71,6 +71,6 @@ get_T <- function(trial, test = "ttest") {
     T <- (abs(U - mu) - 0.5) / sigma
   }
 
-  return(T)
+  return(unname(T))
 }
 

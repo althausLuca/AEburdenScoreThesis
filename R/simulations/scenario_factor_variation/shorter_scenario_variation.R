@@ -1,10 +1,11 @@
 source("R/trials/trial_loader.R")
 source("R/models_and_tests/model_computer.R")
 source("R/simulations/default_models.R")
-source("R/simulations/scenario_factor_variation/trial_file_selector.R")
 
 trial_folder <- "data/trials/shorter_gap_times/"
-result_folder <- "results/shorter_gap_times/"
+result_folder <- "results/shorter_gap_times/qr/"
+
+MODELS <- QR_MODELS
 
 # list folder
 trial_files <- list.files(trial_folder, full.names = TRUE)
@@ -25,8 +26,8 @@ for (trial_file in trial_files) {
   output_file_name <- trial_file_name
 
   model_computer <- init_model_computer(trial_data, trial_name, result_folder)
-
-  add_models(model_computer, DEFAULT_MODELS)
+  # drop_model(model_computer, "two_part_wilcoxon")
+  add_models(model_computer, MODELS)
 
   print(output_file_name)
 }

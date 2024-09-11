@@ -29,3 +29,4 @@ TRIAL_SUB_SELECTION = 1/5
 sbatch
 
 
+#find . -type f -name "*.RData.RData" | while read file; do mv "$file" "${file%.RData.RData}.RData"; done

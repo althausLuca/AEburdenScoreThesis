@@ -6,11 +6,32 @@ library(Rfast2)
 
 source("R/trials/trial_loader.R")
 
-trial_data <- load_equal_trials()
-trial <- trial_data$trials[[1]]
+# trial_data <- load_equal_trials()
+# trial <- trial_data$trials[[1]]
 
-TMB_model <- glmmTMB(Score ~ Group, family = ziGamma(link = "log"), data = trial, ziformula=~Group , dispformula = ~1)
+TMB_model <- glmmTMB(Score ~ Group, family = lognormal(link = "log"), data = trial, ziformula=~Group , dispformula = ~Group)
 summary(TMB_model)
+glmmTMB:::print.VarCorr.glmmTMB(TMB_model)
+# Conditional model:
+# Estimate Std. Error z value Pr(>|z|)
+# (Intercept)     2.56845    0.16323  15.735   <2e-16 ***
+# Grouptreatment  0.09591    0.12340   0.777    0.437
+# Dispersion parameter for lognormal family (): 19.3
+log(mean(scores_control.c))
+
+mean <- fixef(TMB_model)[1]$cond[1]
+meanlog <- fixef(TMB_model)[1]$cond[2]
+
+scores_control.c <- trial$Score[trial$Group == "control" & trial$Score > 0]
+scores_treatment.c <- trial$Score[trial$Group == "treatment" & trial$Score > 0]
+
+fitdistr(scores_control.c, "lognormal")
+# meanlog      sdlog
+# 2.0507231   1.1533110
+# (0.1846776) (0.1305868)
+
+
+
 
 TMB_model <- glmmTMB(Score ~ Group, family = lognormal(link = "log"), data = trial, ziformula=~Group , dispformula = ~1)
 summary(TMB_model)

@@ -81,9 +81,9 @@ simulate_trials_from_scenario <- function(scenario, n_sim = 5000,
   # Open CSV file in append mode
   file.remove(file_path, showWarnings = FALSE)
 
-  # Open CSV file in append mode
-  if (!dir.exists(result_path)) {
-    dir.create(result_path, recursive = TRUE)
+
+  if (!dir.exists(dirname(file_path))) {
+    dir.create(dirname(file_path), recursive = TRUE)
   }
 
   file_conn <- file(file_path, "a")

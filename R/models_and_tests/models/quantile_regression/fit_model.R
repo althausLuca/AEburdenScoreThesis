@@ -1,6 +1,8 @@
 library(quantreg)
 
-fit_model.quantile_regression_model <- function(model, trial, tau = model$parameters$tau) {
+summary.rq
+
+fit_model.quantile_regression_model <- function(model, trial, tau = model$parameters$tau, summary_method = model$parameters$summary_method) {
   trial <- check_data(trial)
   quantile_regression_model <- rq(trial$Score ~ trial$Group, tau = tau)
   quantile_regression_model$tau <- tau
@@ -26,21 +28,33 @@ fit_model.quantile_regression_model <- function(model, trial, tau = model$parame
     NA
   })
   boot_xy.p_value <- tryCatch({
-    summary(quantile_regression_model, se = "boot" ,bsmethod= "xy")$coefficients[2, "Pr(>|t|)"]
+    summary(quantile_regression_model, se = "boot", bsmethod = "xy")$coefficients[2, "Pr(>|t|)"]
   }, error = function(e) {
     NA
   })
   boot_pwy.p_value <- tryCatch({
-    summary(quantile_regression_model, se = "boot" ,bsmethod= "pwy")$coefficients[2, "Pr(>|t|)"]
+    summary(quantile_regression_model, se = "boot", bsmethod = "pwy")$coefficients[2, "Pr(>|t|)"]
   }, error = function(e) {
     NA
   })
 
   boot_mcmb.p_value <- tryCatch({
-    summary(quantile_regression_model, se = "boot" ,bsmethod= "mcmb")$coefficients[2, "Pr(>|t|)"]
+    summary(quantile_regression_model, se = "boot", bsmethod = "mcmb")$coefficients[2, "Pr(>|t|)"]
   }, error = function(e) {
     NA
   })
+
+  p_value <- switch(summary_method,
+                    "ker" = ker.p_value,
+                    "nid" = nid.p_value,
+                    "boot_xy" = boot_xy.p_value,
+                    "xy" = boot_xy.p_value,
+                    "boot_pwy" = boot_pwy.p_value,
+                    "pwy" = boot_pwy.p_value,
+                    "boot_mcmb" = boot_mcmb.p_value,
+                    "mcmb" = boot_mcmb.p_value,
+                    stop("Invalid summary method")
+  )
 
   results <- list(
     model = quantile_regression_model,
@@ -52,7 +66,7 @@ fit_model.quantile_regression_model <- function(model, trial, tau = model$parame
     boot_xy.p_value = boot_xy.p_value,
     boot_pwy.p_value = boot_pwy.p_value,
     boot_mcmb.p_value = boot_mcmb.p_value,
-    p_value = ker.p_value
+    p_value = p_value
   )
 
 }

@@ -4,8 +4,15 @@ library(data.table)
 #' and saving/loading to/from file. Also provides a function to plot p-values of models and stores the trial data the models are applied on.
 #'
 #' @param trial_data A trial_data object
+#' @param name A string specifying the name of the model computer
+#' @param path A string specifying the path to save the model computer
+#' @param check_exists A boolean specifying whether to check if the model computer already exists
+#' (default = TRUE and will load the model computer if it exists instead of creating a new one)
+#' @return A model_computer object
 init_model_computer <- function(trial_data, name = "model_computer", path = "results/model_results/", check_exists = TRUE) {
   file_path <- paste0(gsub("/$", "", path), "/", name, ".RData")
+  file_path <- gsub("//", "/", file_path)
+  file_path <- gsub(".RData.RData", ".RData", file_path)
 
   if (check_exists) {
     model_computer <- load_model_computer(file_path)
@@ -50,6 +57,10 @@ load_model_computer <- function(file_path) {
 }
 
 add_model <- function(model_computer, model_or_test, save = TRUE, recompute = FALSE) {
+  if (isTRUE(model_or_test$force_computation)) {
+      drop_model(model_computer, model_or_test$repr, save = FALSE)
+  }
+
   print(paste0("Adding model: ", model_or_test$repr, ""))
 
   if (!recompute & model_or_test$repr %in% names(model_computer$model_metrics)) {
@@ -58,13 +69,13 @@ add_model <- function(model_computer, model_or_test, save = TRUE, recompute = FA
   }
 
   if (inherits(model_or_test, "model")) {
-    model_fits <- model_computer$trial_data$apply_to_each(function(trial) fit_model(model_or_test,trial), use_parallel = FALSE)
+    model_fits <- model_computer$trial_data$apply_to_each(function(trial) fit_model(model_or_test, trial), use_parallel = FALSE)
     model_restults <- data.table(t(sapply(model_fits, function(x) x$estimates)))
     model_restults$p_value <- lapply(model_fits, function(fit) fit$p_value)
     model_restults$AIC <- sapply(model_fits, function(fit) fit$AIC)
   }
   else if (inherits(model_or_test, "test")) {
-    test_fits <- model_computer$trial_data$apply_to_each(function(trial) run_test(model_or_test, trial) , use_parallel = FALSE)
+    test_fits <- model_computer$trial_data$apply_to_each(function(trial) run_test(model_or_test, trial), use_parallel = FALSE)
     p_values <- sapply(test_fits, function(x) x$p_value)
     model_restults <- data.table(p_value = p_values)
   }
@@ -90,12 +101,23 @@ add_models <- function(model_computer, model_list, recompute = FALSE, skip_fault
       if (!file.exists(file)) {
         writeLines("Error Log", file)
       }
-      writeLines(paste0("Error: ",model, e$message), file)
+      writeLines(paste0("Error: ", model, e$message), file)
       if (!skip_faulty) {
         stop(e)
       }
     })
   }
+}
+
+
+drop_model <- function(model_computer, model_repr, save = FALSE) {
+  model_exists <- model_repr %in% names(model_computer$model_metrics)
+  model_computer$model_metrics[[model_repr]] <- NULL
+  model_computer$models[[model_repr]] <- NULL
+  if (save) {
+    save.model_computer(model_computer)
+  }
+  return(model_exists)
 }
 
 #' @title get_value
@@ -121,7 +143,7 @@ get_value <- function(model_computer, val = "p_value") {
 }
 
 
-p_value_plot <- function(model_computer, save = NULL , models_to_exclude = NULL) {
+p_value_plot <- function(model_computer, save = NULL, models_to_exclude = NULL) {
   source("R/evaluation/analysis_and_comparison/p_value_plot.R")
 
   p_values <- get_value(model_computer, "p_value")
@@ -136,7 +158,7 @@ p_value_plot <- function(model_computer, save = NULL , models_to_exclude = NULL)
   }
 
   if (!is.null(save)) {
-    dir.create(dirname(save) , recursive = TRUE, showWarnings = FALSE)
+    dir.create(dirname(save), recursive = TRUE, showWarnings = FALSE)
     p_value_plot$save(save)
   }
 
@@ -145,17 +167,17 @@ p_value_plot <- function(model_computer, save = NULL , models_to_exclude = NULL)
 }
 
 
-p_value_cdf_table <-function(model_computer, values=c(0.05,0.25,0.5,0.75)){
+p_value_cdf_table <- function(model_computer, values = c(0.05, 0.25, 0.5, 0.75)) {
   source("R/models_and_tests/model_settings.R")
   p_values <- get_value(model_computer, "p_value")
   model_names <- names(p_values)
 
-  df <- data.frame(sapply(values , function(val) colMeans(p_values < val)))
+  df <- data.frame(sapply(values, function(val) colMeans(p_values < val)))
   df <- round(df, 3)
   # set colnames
   colnames(df) <- values
   rownames(df) <- NULL
-  df <- cbind(model=0, df)
-  df$model <-lapply(model_names , map_labels)
+  df <- cbind(model = 0, df)
+  df$model <- lapply(model_names, map_labels)
   return(df)
 }

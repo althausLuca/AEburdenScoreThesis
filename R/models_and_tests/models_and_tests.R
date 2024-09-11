@@ -26,11 +26,11 @@ TWEEDIE_REGRESSION <- function(var_power = 1.5, link_power = 0, xi = var_power) 
   return(model)
 }
 
-QUANTILE_REGRESSION <- function(tau = 0.5) {
+QUANTILE_REGRESSION <- function(tau = 0.5, summary_method = "xy") {
   model <- list()
   class(model) <- c("quantile_regression_model", "model")
-  model$parameters <- list(tau = tau)
-  model$repr <- paste0("quantile_regression_tau_", tau)
+  model$parameters <- list(tau = tau, summary_method = summary_method)
+  model$repr <- paste0("quantile_regression_tau_", tau, "_", summary_method)
   model$name <- ifelse(tau == 0.5, "Median Regression", "Quantile Regression")
   return(model)
 }
@@ -76,6 +76,7 @@ PERMUTATION_TEST <- function(n_permutations = 10000) {
 TWO_PART_T_TEST <- function() {
   model <- list()
   class(model) <- c("two_part_t_test", "test")
+  model$parameters <- list()
   model$repr <- "zero_inflated_ttest"
   model$name <- "Zero-Inflated T-Test"
   return(model)
@@ -84,7 +85,8 @@ TWO_PART_T_TEST <- function() {
 TWO_PART_WILCOXON_TEST <- function() {
   model <- list()
   class(model) <- c("two_part_wilcoxon", "test")
-  model$repr <- "zero_inflate_wilcoxon"
+  model$parameters <- list()
+  model$repr <- "two_part_wilcoxon"
   model$name <- "Zero-Inflated Wilcoxon Test"
   return(model)
 }

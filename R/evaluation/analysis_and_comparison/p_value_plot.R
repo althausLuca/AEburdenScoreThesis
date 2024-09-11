@@ -51,16 +51,16 @@ p_value_plot_handler <- function(x_label = "P-Value", y_label = "CDF") {
     line_types_ <- setNames(unlist(lapply(models_name_,get_line_style)), models_name_)
     labels_ <- lapply(models_name_, function(x) TeX(map_labels(x)))
 
-    bottom_right <- c(0.8, 0.25)
-    top_left <- c(0.3, 0.8)
+    pos <-bottom_right <- c(0.8, 0.32)
+    top_left <- c(0.16, 0.75)
 
 
-    if(scenario=="equal"){
-      pos <- bottom_right
-    }
-    else{
-      pos <- bottom_right
-    }
+    # if(scenario=="equal"){
+    #   pos <-top_left
+    # }
+    # else{
+    #   pos <- bottom_right
+    # }
 
     g <- ggplot(data, aes(x = p_value, y = rescaled_id, group = model)) +
       geom_line(aes(color = model, linetype = model), size = 1.1) +
@@ -82,8 +82,8 @@ p_value_plot_handler <- function(x_label = "P-Value", y_label = "CDF") {
       scale_linetype_manual(values = line_types_,
                             labels = labels_ ,
                             breaks = models_name_) +
-      geom_vline(xintercept = 0.05, linetype = "dashed", color = "red") +
-      annotate("text", x = 0.1, y = -0, label = "0.05", angle = 0, color = "red")+
+      geom_vline(xintercept = 0.05, linetype = "dashed", color = "black") +
+      annotate("text", x = 0.1, y = -0, label = "0.05", angle = 0, color = "black")+
       geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black")
     return(g)
   }

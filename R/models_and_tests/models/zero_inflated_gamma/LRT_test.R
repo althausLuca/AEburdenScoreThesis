@@ -24,7 +24,7 @@ log_likelihood <- function(Scores, dist = "gamma", fix.arg = NULL) {
     if (dist == "gamma") {
       start <- list(shape = 1, rate = 0.1)
     }
-    if (dist == "lognorm") {
+    if (dist == "lnorm") {
       start <- list(meanlog = 1, sdlog = 1)
     }
 
@@ -78,36 +78,5 @@ LRT_test <- function(trial, dist = "gamma", fix_arg = TRUE) {
 }
 
 
-source("R/trials/trial_loader.R")
-
-#
-# # test_ <-function(trial) t.test(trial$Score[trial$Group=="treatment"] , trial$Score[trial$Group=="control"])$p.value
-# dist <- "norm" # "gamma" , "normal"
-#
-# test_ <- function(trial) LRT_test(trial, dist = dist , fix_arg = FALSE)
-#
-#
-# trial_data <- load_equal_trials()
-# p_values <- trial_data$apply_to_each(test_)
-# p_values <- unlist(p_values)
-# sig_rate_equal <- sum(p_values < 0.05) / length(p_values)
-#
-#
-# trial_data <- load_longer_trials()
-# p_values <- trial_data$apply_to_each(test_)
-# p_values <- unlist(p_values)
-# sig_rate_longer <- sum(p_values < 0.05) / length(p_values)
-#
-#
-# trial_data <- load_shorter_trials()
-# p_values <- trial_data$apply_to_each(test_)
-# p_values <- unlist(p_values)
-# sig_rate_shorter <- sum(p_values < 0.05) / length(p_values)
-#
-#
-# print(paste0("Continious Distribution used:", dist))
-# print(paste0("Type 1 Error:", sig_rate_equal))
-# print(paste0("Power (Longer event durations):", sig_rate_longer))
-# print(paste0("Power (Shorter event gap times):", sig_rate_shorter))
 
 
