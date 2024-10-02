@@ -6,21 +6,21 @@ DEFAULT_MODELS <- list(
   LOG_ANOVA(c = 1),
   LOG_ANOVA(c = 10000),
   TWEEDIE_REGRESSION(xi = 1.2),
-  force_computation(QUANTILE_REGRESSION()),
-  force_computation(QUANTILE_REGRESSION(tau = 0.75)),
+  # QUANTILE_REGRESSION(),
+  # QUANTILE_REGRESSION(tau = 0.75),
   WILCOXON_TEST(),
   # PERMUTATION_TEST(),
   ZERO_INFLATED_GAMMA(),
   ZERO_INFLATED_LOGNORMAL(),
   TWO_PART_T_TEST(),
-  TWO_PART_WILCOXON_TEST()
+  force_computation(TWO_PART_WILCOXON_TEST())
 )
 
 QR_MODELS <- list(
-  force_computation(QUANTILE_REGRESSION(tau = 0.1)),
-  force_computation(QUANTILE_REGRESSION(tau = 0.25)),
-  force_computation(QUANTILE_REGRESSION()),
-  force_computation(QUANTILE_REGRESSION(tau = 0.75)),
-  force_computation(QUANTILE_REGRESSION(tau = 0.9)),
-  force_computation(QUANTILE_REGRESSION(tau = 0.95))
+  QUANTILE_REGRESSION(tau = 0.1),
+  QUANTILE_REGRESSION(tau = 0.25),
+  QUANTILE_REGRESSION(),
+  QUANTILE_REGRESSION(tau = 0.75),
+  QUANTILE_REGRESSION(tau = 0.9),
+  QUANTILE_REGRESSION(tau = 0.95)
 )

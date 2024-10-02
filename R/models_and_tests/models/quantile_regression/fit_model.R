@@ -1,7 +1,5 @@
 library(quantreg)
 
-summary.rq
-
 fit_model.quantile_regression_model <- function(model, trial, tau = model$parameters$tau, summary_method = model$parameters$summary_method) {
   trial <- check_data(trial)
   quantile_regression_model <- rq(trial$Score ~ trial$Group, tau = tau)

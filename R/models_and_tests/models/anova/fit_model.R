@@ -3,8 +3,6 @@ fit_model.anova_model <- function(model, trial) {
 
   ##model fitting
   anova_model <- lm(trial$Score ~ trial$Group)
-  class(anova_model) <- c("anova_", class(anova_model))
-
   summary <- summary(anova_model)
 
   ## Extract Coefficients
@@ -35,6 +33,7 @@ fit_model.anova_model <- function(model, trial) {
     model = anova_model,
     estimates = estimates,
     p_value = p_value,
+    p_value_lrt = lmtest::lrtest(anova_model)[2,4],
     std_err = std_err,
     AIC = AIC,
     get_CDFs = get_CDFs

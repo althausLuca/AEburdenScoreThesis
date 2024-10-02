@@ -19,7 +19,7 @@ log_likelihood <- function(Scores, dist = "gamma", fix.arg = NULL) {
 
   fit_dist <- tryCatch({
     fitdist(Scores[Scores > 0], dist, calcvcov = FALSE, keepdata = FALSE, fix.arg = fix.arg)
-  }, error = function(e) { # 1 in 5000 frials failed due to not providing starting values
+  }, error = function(e) { # 1 of 5000 frials failed due to not providing starting values
 
     if (dist == "gamma") {
       start <- list(shape = 1, rate = 0.1)
@@ -48,7 +48,6 @@ log_likelihood <- function(Scores, dist = "gamma", fix.arg = NULL) {
 }
 
 LRT_test <- function(trial, dist = "gamma", fix_arg = TRUE) {
-
 
   if (!(dist %in% c("gamma", "lnorm", "norm"))) {
     stop("Distribution not supported")

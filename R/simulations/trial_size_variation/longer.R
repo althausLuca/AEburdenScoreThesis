@@ -8,10 +8,9 @@ for (size in c(50, 30, 20)) {
   set.seed(7)
 
   trial_data <- load_longer_trials()
-  name <- paste0("longer_", size)
-  print("longer")
+  file_path <- paste0("data/trials/sample_size_variation/longer_",size,".csv")
 
-  path <- "results/sample_size_variation"
+  print("longer")
 
   all <- trial_data$all_data()
 
@@ -20,7 +19,6 @@ for (size in c(50, 30, 20)) {
     return(trial_sub_sampler(trial, group_size = size))
   })
 
-  #run the models
-  model_computer <- init_model_computer(trial_data, name, path)
-  add_models(model_computer, DEFAULT_MODELS)
+  save.trial_data(trial_data, file_path = file_path)
+
 }

@@ -7,6 +7,18 @@ source("R/models_and_tests/model_computer.R")
 
 model_folder <- "results/longer_event_durations"
 model_files <- list.files(model_folder, full.names = TRUE)
+model_files <- model_files[!grepl("_qr", model_files)]
+
+
+models_to_exclude <- c(
+                       "zero_inflate_wilcoxon",
+                       "quantile_regression_tau_0.5",
+                       "zero_inflated_ttest",
+                       "log_anova_c_10000",
+                       "quantile_regression_tau_0.25_xy",
+                       "quantile_regression_tau_0.95_xy",
+                       "quantile_regression_tau_0.9_xy" ,
+                       "quantile_regression_tau_0.1_xy")
 
 store_name <- "longer_p_values.pdf"
 
@@ -24,6 +36,11 @@ for (model_file in model_files) { # takes a while
   sig_p_values <- colMeans(p_values < 0.05, na.rm = TRUE)
   print(sig_p_values)
   for (model in names(sig_p_values)) {
+    if (model %in% models_to_exclude) {
+      print("AAAAAAAAAAAAAAA")
+      print(model)
+      next
+    }
     df <- rbind(df, c(scenario_factor = scenario_factor, model = model, value = unname(sig_p_values[model])))
   }
 
@@ -34,9 +51,6 @@ df <- data.frame(df)
 df$value <- as.numeric(df$value)
 df$scenario_factor <- as.numeric(df$scenario_factor)
 df <- df[order(df$scenario_factor, decreasing = FALSE),]
-
-models_to_exclude <- c("tweedie_var_power_1.2_link_power_0" , "zero_inflate_wilcoxon", "quantile_regression_tau_0.5")
-df <- df[!(df$model %in% models_to_exclude),]
 
 
 source("R/models_and_tests/model_settings.R")
@@ -68,8 +82,8 @@ g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   theme(legend.position = 'top') +
   geom_vline(xintercept = base_level, linetype = "dotted", color = "black") +
   annotate("text", x = base_level+0.3, y = 0.92, label = "Equal expected \n even duration", angle = 0, color = "black", size = 5)+
-  annotate("segment", x = 1.6, y = 0.03, xend = 2 + 5, yend = 0.03, arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
-  annotate("text", x = 3.5, y = 0.06, label = "Longer event durations in the experimental group", angle = 0, color = "black", size = 4)
+  annotate("segment", x = 1.6, y = 0.03, xend = 2 + 7.5, yend = 0.03, arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
+  annotate("text", x = 3.5, y = 0.05, label = "Longer event durations in the experimental group", angle = 0, color = "black", size = 5)
   levels <- unique(df$scenario_factor)
   levels.r <- round(levels, 1)
   levels <- ifelse(levels == levels.r, levels.r,levels)

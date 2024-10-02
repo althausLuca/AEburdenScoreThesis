@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(latex2exp)
-
+# source("R/simulations/default_models.R")
 source("R/models_and_tests/model_computer.R")
 source("R/helpers.R")
 
@@ -10,11 +10,17 @@ source("R/helpers.R")
 model_folder <- "results/shorter_gap_times"
 store_name <- "shorter_p_values.pdf"
 
+models_to_exclude <- c("tweedie_var_power_1.5_link_power_0", "zero_inflate_wilcoxon", "quantile_regression_tau_0.5","zero_inflated_ttest","log_anova_c_10000")
+
 model_files <- list.files(model_folder, full.names = TRUE)
 
 #files with _qr
-model_files <- model_files[grep("_qr", model_files)]
-store_name <- "shorter_p_values_qr.pdf"
+model_files <- model_files[!grepl("_qr", model_files)]
+store_name <- "shorter_p_values.pdf"
+
+# model_file <- "results/shorter_gap_times/Scenario_2_k_1.5_s_1.RData"
+# model_computer <- load_model_computer(model_file)
+# add_model(model_computer, TWO_PART_WILCOXON_TEST(), recompute = TRUE)
 
 df <- NULL
 for (model_file in model_files) { # takes a while
@@ -27,9 +33,9 @@ for (model_file in model_files) { # takes a while
   sig_p_values <- colMeans(p_values < 0.05, na.rm = TRUE)
   print(sig_p_values)
   for (model in names(sig_p_values)) {
-    # if (model %in% models_to_exclude) {
-    #   next
-    # }
+    if (model %in% models_to_exclude) {
+      next
+    }
     df <- rbind(df, c(scenario_factor = scenario_factor, model = model, value = unname(sig_p_values[model])))
   }
 
@@ -76,12 +82,12 @@ df$model_names <- sapply(df$model, function(x) TeX(map_labels(x)))
 g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   geom_line(aes(color = model, linetype = model), size = 1.1) +
   geom_point(data = subset(df, scenario_factor %in% levels), aes(color = model, shape = model), size = 3, stroke = 2) +
-  # scale_color_manual(values = colors_, labels = labels_, breaks = model_names_) +
-  # scale_linetype_manual(values = line_types_, labels = labels_, breaks = model_names_) +
-  # scale_shape_manual(values = markers_, labels = labels_, breaks = model_names_) +
-  scale_color_manual(values=brown_palette, labels = named_labels) +
-  scale_linetype_discrete(labels = named_labels) +
-  scale_shape_discrete(labels = labels_) +
+  scale_color_manual(values = colors_, labels = labels_, breaks = model_names_) +
+  scale_linetype_manual(values = line_types_, labels = labels_, breaks = model_names_) +
+  scale_shape_manual(values = markers_, labels = labels_, breaks = model_names_) +
+  # scale_color_manual(values=brown_palette, labels = named_labels) +
+  # scale_linetype_discrete(labels = named_labels) +
+  # scale_shape_discrete(labels = labels_) +
   labs(x = x_lab, y = y_lab, title = "") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5), legend.text = element_text(size = 15), legend.title = element_text(size = 0)) +
@@ -92,47 +98,10 @@ g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   theme(legend.position = 'top') +
   geom_vline(xintercept = base_level, linetype = "dotted", color = "black") +
   annotate("text", x = base_level + 0.35, y = 0.92, label = "Equal expected \n gap time", angle = 0, color = "black", size = 5) +
-  # annotate("segment", x = 0.75, y = 0.05, xend = 0.12, yend = 0.05, arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
-  # annotate("text", x = 0.3, y = 0.075, label = "More frequent events in the experimental group", angle = 0, color = "black", size = 5) +
+  annotate("segment", x = 0.75, y = 0.05, xend = 0.12, yend = 0.05, arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
+  annotate("text", x = 0.3, y = 0.075, label = "More frequent events in the experimental group", angle = 0, color = "black", size = 5) +
   scale_x_continuous(trans = transfromation, breaks = levels, labels = levels)
 g
 
 ggsave(store_name, plot = g, width = 15, height = 10)
-
-#
-# g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
-#   geom_line(aes(color = model, linetype = model), size = 1.1) + # Map both color and linetype to model
-#   labs(x = "Factor (Experimental/Control) for expected gap time between events", y = "Proportion of Significant P-values", title = "", color = "Model", linetype = "Model") +
-#   theme_minimal() +
-#   theme(plot.title = element_text(hjust = 0.5), legend.text = element_text(size = 15), legend.title = element_text(size = 0)) +
-#   theme(axis.text = element_text(size = 14, face = "bold"), axis.title = element_text(size = 17, face = "bold")) +
-#   theme(legend.key.width = unit(1, "cm")) +
-#   ylim(0, 1) +
-#   scale_color_manual(values = color_values, labels = labels) +
-#   scale_linetype_manual(values = lines_types, labels = labels)
-# g
-# g <- g +
-#
-#
-#   guides(fill = guide_legend(override.aes = list(size = 15))) +
-#   geom_point(aes(color = model), size = 2.5, show.legend = FALSE) +
-#   guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
-#   theme(legend.position = 'top') +
-#   geom_vline(xintercept = base_level, linetype = "dotted", color = "black") +
-#   annotate("text", x = base_level + 0.35, y = 0.92, label = "Equal expected \n gap time", angle = 0, color = "black", size = 5)
-# g
-# g <- g +
-#   annotate("segment", x = 0.75, y = 0.05, xend = 0.12, yend = 0.05,
-#            arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
-#   annotate("text", x = 0.3, y = 0.075, label = "More frequent events in the experimental group", angle = 0, color = "black", size = 5)
-# g
-#
-#
-# transfromation <- scales::trans_new("log_reverse",
-#                                     transform = function(x) -log(x),
-#                                     inverse = function(x) exp(-x))
-#
-# g <- g + scale_x_continuous(trans = transfromation, breaks = levels, labels = levels)
-# g
-# ggsave("shorter_p_values.pdf", plot = g, width = 14, height = 7)
 

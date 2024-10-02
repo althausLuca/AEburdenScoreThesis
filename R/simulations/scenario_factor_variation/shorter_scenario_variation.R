@@ -3,14 +3,16 @@ source("R/models_and_tests/model_computer.R")
 source("R/simulations/default_models.R")
 
 trial_folder <- "data/trials/shorter_gap_times/"
-result_folder <- "results/shorter_gap_times/qr/"
+result_folder <- "results/shorter_gap_times/"
 
-MODELS <- QR_MODELS
+MODELS <- DEFAULT_MODELS
 
 # list folder
 trial_files <- list.files(trial_folder, full.names = TRUE)
 FILE_FROM_ENV <- Sys.getenv("TRIAL_FILE" , unset="")
 
+
+trial_files <- "data/trials/shorter_gap_times/Scenario_2_k_1.5_s_1.csv"
 if (FILE_FROM_ENV != "") {
   trial_files <- FILE_FROM_ENV
 }

@@ -11,12 +11,16 @@ pre_process_name <- function(model_name) {
   if (grepl("permutation", model_name)) {
     model_name <- "permutation_test"
   }
-  if (grepl("zero_inflated_ttest", model_name) | grepl("zero_inflate_ttest", model_name)) {
-        model_name <- "two_part_t_test"
+  if (grepl("zero_inflated_ttest", model_name) | grepl("two_part_ttest", model_name)) {
+    model_name <- "two_part_t_test"
   }
-  if (grepl("quantile_regression", model_name)) {
-    model_name <- "quantile_regression"
+  if (grepl("quantile_regression_tau_0.75", model_name)) {
+    model_name <- "quantile_regression_tau_75"
   }
+  if (grepl("quantile_regression_tau_0.5", model_name)) {
+    model_name <- "quantile_regression_tau_0.5"
+  }
+
   return(model_name)
 }
 
@@ -27,7 +31,8 @@ get_color <- function(model_name) {
                   log_anova = "navy",
                   anova = "purple",
                   tweedie = "tomato4",
-                  quantile_regression = "lightpink4",
+                  quantile_regression_tau_0.5 = "lightpink4",
+                  quantile_regression_tau_75 = "lightpink1",
                   permutation_test = "yellow3",
                   wilcoxon = "darkgreen",
 
@@ -54,6 +59,8 @@ get_marker <- function(model_name) {
                   anova = 5,
                   tweedie = 4,
                   quantile_regression = 3,
+                  quantile_regression_tau_0.5 = 3,
+                  quantile_regression_tau_75 = 1,
                   permutation_test = 5,
                   wilcoxon = 6,
                   log_anova_c_0.001 = 1,
@@ -81,6 +88,8 @@ get_line_style <- function(model_name) {
                        anova = "dashed",
                        tweedie = "dotted",
                        quantile_regression = "solid",
+                       quantile_regression_tau_0.5 = "solid",
+                       quantile_regression_tau_75 = "dotted",
                        permutation_test = "dashed",
                        wilcoxon = "dashed",
                        log_anova_c_0.001 = "dotdash",
@@ -106,9 +115,9 @@ map_labels <- function(model_name) {
     return("Median Regression")
   }
 
-  else if(grepl("tau", model_name)){
-    tau <-  strsplit(model_name, "_")[[1]][4]
-    return(paste0("Quantile Regression $$$_{\\tau=",tau,"}$"))
+  else if (grepl("tau", model_name)) {
+    tau <- strsplit(model_name, "_")[[1]][4]
+    return(paste0("Quantile Regression $$$_{\\tau=", tau, "}$"))
   }
 
   model_name <- pre_process_name(model_name)
@@ -135,17 +144,19 @@ map_labels <- function(model_name) {
   }
 }
 
-order_models <- function(model_reprs){
+order_models <- function(model_reprs) {
   model_reprs <- sort(model_reprs)
-  processed_names <- sapply(model_reprs , pre_process_name)
+  processed_names <- sapply(model_reprs, pre_process_name)
 
   models_with_anova <- grepl("anova", processed_names)
   zero_inflated_models <- grepl("zero_inflate", processed_names)
   two_part_tests <- grepl("two_part", processed_names)
-  others <- !models_with_anova & !zero_inflated_models & !two_part_tests
+  others <- !models_with_anova &
+    !zero_inflated_models &
+    !two_part_tests
 
   result <- c(model_reprs[models_with_anova], model_reprs[others], model_reprs[zero_inflated_models], model_reprs[two_part_tests])
-  if(length(result) != length(model_reprs)){
+  if (length(result) != length(model_reprs)) {
     stop("Error in ordering models")
   }
   return(result)

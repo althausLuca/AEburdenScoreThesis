@@ -8,7 +8,7 @@ source("R/models_and_tests/model_computer.R")
 source("R/trials/trial_data.R")
 
 result_folder <- "results/more_severe_events/"
-models_to_exclude <- c("tweedie_var_power_1.5_link_power_0", "zero_inflate_wilcoxon", "quantile_regression_tau_0.5")
+models_to_exclude <- c("tweedie_var_power_1.5_link_power_0", "zero_inflate_wilcoxon", "quantile_regression_tau_0.5","zero_inflated_ttest","log_anova_c_10000")
 # list folder
 model_files <- list.files(result_folder, full.names = TRUE)
 
@@ -34,13 +34,15 @@ for (model_file in model_files) { # takes a while
 }
 df_ <- df
 
+df <- df_
+
 df <- data.frame(df)
 unique(df$scenario_factor)
-factor_names <- c("default" = "Equal Settings",
-                  "next_level_experimental" = "Experimental Next Severity Level",
+factor_names <- c("default" = "Equal settings",
+                  "next_level_experimental" = "Experimental next severity level",
                   "all_mostly_severe_experimental" = "Experimental all mostly severe",
                   "all_severe_experimental" = "Experimental all severe",
-                  "all_severe_experimental_all_mild_control" = "All Severe Experimental \n All Mild Control"
+                  "all_severe_experimental_all_mild_control" = "Experimental all sever \n Control all mild"
 )
 
 
@@ -97,13 +99,15 @@ g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   theme(legend.position = 'top') #+
   # theme(axis.text.x = element_text(angle = 45, hjust = 1))
 g
-g + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-# +
-  # geom_vline(xintercept = base_level, linetype = "dotted", color = "black") +
-  # annotate("text", x = base_level + 0.35, y = 0.92, label = "Equal expected \n gap time", angle = 0, color = "black", size = 5) +
-  # annotate("segment", x = 0.75, y = 0.05, xend = 0.12, yend = 0.05, arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
-  # annotate("text", x = 0.3, y = 0.075, label = "More frequent events in the experimental group", angle = 0, color = "black", size = 5) +
+g <- g + theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+ geom_vline(xintercept = 1, linetype = "dotted", color = "black") +
+  annotate("text", x = 1 + 0.35, y = 0.92, label = "Equal expected \n severity", angle = 0, color = "black", size = 5) +
+  annotate("segment", x = 1.1, y = 0.5, xend = 3, yend = 0.5, arrow = arrow(type = "closed", length = unit(0.02, "npc")))+
+  annotate("text", x = 2, y = 0.53, label = "Higher severity in experimental group", angle = 0, color = "black", size = 5)
   # scale_x_continuous(trans = transfromation, breaks = levels, labels = levels)
 
-
+store_name <- "more_severe_events.pdf"
 ggsave(store_name, plot = g, width = 15, height = 10)
+
+source("R/evaluation/long_df_to_table.R")
+print(long_df_to_table(df))

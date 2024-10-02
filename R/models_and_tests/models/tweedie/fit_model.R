@@ -9,15 +9,16 @@ fit_model.tweedie_glm_model <- function(model , trial,
   if (xi == "infer") {
     print("infering xi using tweedie.profile()")
     profile_result <- tweedie.profile(trial$Score ~ trial$Group, link.power = link_power, fit.glm = F, xi.vec
-      = seq(1.1, 2, by = 0.1))
+      = seq(1.05, 2, by = 0.1))
 
     xi <- profile_result$xi.max
 
   }
+  else {
+    xi <- as.numeric(xi)
+  }
 
-  print(xi)
-  print(link_power)
-  print(trial$Score)
+
   tweedie_model <- glm(trial$Score ~ trial$Group, family =
     statmod::tweedie(var.power = xi, link.power = link_power))
 
@@ -35,8 +36,12 @@ fit_model.tweedie_glm_model <- function(model , trial,
     xi = xi
   )
 
-  print(phi)
-  AIC <- AICtweedie(tweedie_model, dispersion = phi)
+  if(xi == 0){# if xi is zero can not compute aic
+    AIC <- NULL
+  }
+  else{
+    AIC <- AICtweedie(tweedie_model, dispersion = phi)
+  }
 
   summary_tweedy <- summary(tweedie_model)
   p_value <- summary_tweedy$coefficients[2, 4]

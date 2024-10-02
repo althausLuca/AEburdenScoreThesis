@@ -5,12 +5,13 @@ source("R/simulations/default_models.R")
 dir.create("results/sample_size_variation" , recursive = TRUE)
 
 
+
 for (size in c(50, 30, 20)) {
   set.seed(7)
 
   trial_data <- load_equal_trials()
-  name <- paste0("equal_", size)
-  path <- "results/sample_size_variation"
+  file_path <- paste0("data/trials/sample_size_variation/equal_",size,".csv")
+
   print("equal")
   all <- trial_data$all_data()
 
@@ -19,9 +20,7 @@ for (size in c(50, 30, 20)) {
     return(trial_sub_sampler(trial, group_size = size))
   })
 
-  #run the models
-  model_computer <- init_model_computer(trial_data, name, path)
-  add_models(model_computer, DEFAULT_MODELS)
+  save.trial_data(trial_data, file_path = file_path)
 }
 
 

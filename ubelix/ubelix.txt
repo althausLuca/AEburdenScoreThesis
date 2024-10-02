@@ -7,7 +7,7 @@ scp -r R/simulations/model_fitting la16e066@submit03.unibe.ch:thesis/R/simulatio
 scp -r la16e066@submit03.unibe.ch:thesis/results results/
 
 
-squeue --job=32490640
+squeue --job=32490  640
 squeue --me
 
 scancel

@@ -23,12 +23,12 @@ p_value_plot_handler <- function(x_label = "P-Value", y_label = "CDF") {
     }
 
     if (is.null(color)) {
-      color <- get_color(model_name)# defaults to black
+      color <- get_color(model_name) # defaults to black
     }
 
     model_p_values <- sort(model_p_values)
     x <- rescale_x(1:length(model_p_values))
-    stopifnot(x>=0 & x<=1)
+    stopifnot(x >= 0 & x <= 1)
     model_names <<- c(model_names, model_name)
     colors <<- c(colors, color)
     model_rate_under_0.05 <<- c(model_rate_under_0.05, sum(model_p_values < 0.05) / length(model_p_values))
@@ -42,25 +42,24 @@ p_value_plot_handler <- function(x_label = "P-Value", y_label = "CDF") {
   }
 
 
-
-  plot <- function() {
-
-    models_name_ <- model_names[order(model_rate_under_0.05,decreasing = TRUE)]
-
-    colors_ <- setNames(unlist(lapply(models_name_,get_color)), models_name_)
-    line_types_ <- setNames(unlist(lapply(models_name_,get_line_style)), models_name_)
+  plot <- function(infer_colors = TRUE) {
+    models_name_ <- model_names[order(model_rate_under_0.05, decreasing = TRUE)]
+    if (infer_colors) {
+      colors_ <- setNames(unlist(lapply(models_name_, get_color)), models_name_)
+    }else {
+      colors_ <- colors
+    }
+    line_types_ <- setNames(unlist(lapply(models_name_, get_line_style)), models_name_)
     labels_ <- lapply(models_name_, function(x) TeX(map_labels(x)))
 
-    pos <-bottom_right <- c(0.8, 0.32)
+    pos <- bottom_right <- c(0.8, 0.32)
     top_left <- c(0.16, 0.75)
 
 
-    # if(scenario=="equal"){
-    #   pos <-top_left
-    # }
-    # else{
-    #   pos <- bottom_right
-    # }
+    if (exists("scenario") && scenario == "equal") {
+      pos <- top_left
+    }
+
 
     g <- ggplot(data, aes(x = p_value, y = rescaled_id, group = model)) +
       geom_line(aes(color = model, linetype = model), size = 1.1) +
@@ -77,27 +76,28 @@ p_value_plot_handler <- function(x_label = "P-Value", y_label = "CDF") {
         axis.title = element_text(size = 16, face = "bold")
       ) +
       scale_color_manual(values = colors_,
-                         labels = labels_ ,
+                         labels = labels_,
                          breaks = models_name_) +
       scale_linetype_manual(values = line_types_,
-                            labels = labels_ ,
+                            labels = labels_,
                             breaks = models_name_) +
       geom_vline(xintercept = 0.05, linetype = "dashed", color = "black") +
-      annotate("text", x = 0.1, y = -0, label = "0.05", angle = 0, color = "black")+
+      annotate("text", x = 0.1, y = -0, label = "0.05", angle = 0, color = "black") +
       geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black")
     return(g)
   }
 
-  get_colors <- function(){
+  get_colors <- function() {
     return(colors)
   }
 
-  save <- function(file_name = "p_values.pdf", file_path = "plots/p_values/" , units="cm", width=18, height=15, ...){
+  save <- function(file_name = "p_values.pdf", file_path = "plots/p_values/", units = "cm",
+                   width = 18, height = 15, infer_colors = TRUE, ...) {
     filename <- paste0(file_path, file_name)
-    dir.create(dirname(filename) , recursive = TRUE, showWarnings = FALSE)
-    ggsave(filename, plot(), units = units, width = width, height = height, ...)
+    dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
+    ggsave(filename, plot(infer_colors), units = units, width = width, height = height, ...)
   }
 
-  return(list(plot = plot, add = add , get_colors = get_colors , save =  save ))
+  return(list(plot = plot, add = add, get_colors = get_colors, save = save))
 }
 

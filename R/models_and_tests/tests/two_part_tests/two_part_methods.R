@@ -68,7 +68,18 @@ get_T <- function(trial, test = "ttest") {
     mu <- m_c * n_c / 2
     sigma <- sqrt(m_c * n_c * (m_c + n_c + 1) / 12)
 
-    T <- (abs(U - mu) - 0.5) / sigma
+    contininutiy_correction <- 0.5
+    if(U - mu < 0) {
+      contininutiy_correction <- -0.5
+    }
+    T <- (U - mu - contininutiy_correction) / sigma
+
+    # T.2 <- (abs(U - mu) - 0.5) / sigma
+    # if(abs(T) != (T.2)) {
+    #   print("T and T.2 are different")
+    #   print(T)
+    #   print(T.2)
+    # }
   }
 
   return(unname(T))

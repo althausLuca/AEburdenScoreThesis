@@ -23,8 +23,11 @@ init_trial_data <- function(trials_list) {
     cat("\n")
 
     func_silent <- function(i, trial, ...) {
-    { sink("/dev/null"); result <- func(trial, ...); sink(); }
+      success <- FALSE
+      on.exit({ if(!success) sink()})
+    { sink("/dev/null");  ; result <- func(trial, ...); sink(); }
       cat("\r Processing trial ", i, " of ", n, " trials")
+      success <- TRUE
       return(result)
     }
 
@@ -66,7 +69,6 @@ init_trial_data <- function(trials_list) {
   #result <- list(n_trials = n_trials, trials = trials_list, all_data = all_data, apply_to_each = apply_to_each)
 
 
-  # set class of result to "trial_data"
   class(trial_data) <- "trial_data"
   return(trial_data)
 
@@ -102,4 +104,29 @@ summary.trial_data <- function(trial_data, ...) {
   row.names(df) <- c("control", "treatment")
 
   return(df)
+}
+
+save.trial_data <- function(trial_data, file_path) {
+  # Open CSV file in append mode
+  file.remove(file_path, showWarnings = FALSE)
+
+  if (!dir.exists(dirname(file_path))) {
+    dir.create(dirname(file_path), recursive = TRUE)
+  }
+
+  file_conn <- file(file_path, "a")
+
+  for (index in seq_along(trial_data$trials)) {
+    # Simulate control and treatment scores
+    df <- trial_data$trials[[index]]
+
+    control_scores <- df$Score[df$Group == "control"]
+    treatment_scores <- df$Score[df$Group == "treatment"]
+
+    # Write results to CSV file as one row
+    write.table(as.data.frame(rbind(control_scores, treatment_scores), row.names = c("control", "treatment")),
+                file = file_conn, sep = ",", col.names = FALSE, row.names = TRUE, append = TRUE)
+
+  }
+  close(file_conn)
 }

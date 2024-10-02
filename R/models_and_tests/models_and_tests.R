@@ -77,7 +77,7 @@ TWO_PART_T_TEST <- function() {
   model <- list()
   class(model) <- c("two_part_t_test", "test")
   model$parameters <- list()
-  model$repr <- "zero_inflated_ttest"
+  model$repr <- "two_part_ttest"
   model$name <- "Zero-Inflated T-Test"
   return(model)
 }
