@@ -22,6 +22,8 @@ p_value_plot_handler <- function(x_label = "P-Value", y_label = "CDF") {
       return()
     }
 
+    model_p_values <- unlist(model_p_values)
+
     if (is.null(color)) {
       color <- get_color(model_name) # defaults to black
     }

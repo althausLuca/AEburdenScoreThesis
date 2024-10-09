@@ -110,6 +110,12 @@ load_equal_trials <- function(){
 }
 
 
+scenario_loaders <- list(
+  shorter_gap_times = load_shorter_trials,
+  longer_events = load_longer_trials,
+  equal = load_equal_trials
+)
+
 
 
 

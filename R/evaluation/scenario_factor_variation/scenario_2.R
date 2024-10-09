@@ -7,16 +7,14 @@ source("R/models_and_tests/model_computer.R")
 source("R/helpers.R")
 
 
-model_folder <- "results/shorter_gap_times"
-store_name <- "shorter_p_values.pdf"
+model_folder <- "results/shorter_gap_times_500"
+store_name <- "plots/shorter_p_values_500.pdf"
 
 models_to_exclude <- c("tweedie_var_power_1.5_link_power_0", "zero_inflate_wilcoxon", "quantile_regression_tau_0.5","zero_inflated_ttest","log_anova_c_10000")
-
 model_files <- list.files(model_folder, full.names = TRUE)
 
-#files with _qr
+#files without _qr
 model_files <- model_files[!grepl("_qr", model_files)]
-store_name <- "shorter_p_values.pdf"
 
 # model_file <- "results/shorter_gap_times/Scenario_2_k_1.5_s_1.RData"
 # model_computer <- load_model_computer(model_file)

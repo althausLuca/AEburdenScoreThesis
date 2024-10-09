@@ -91,4 +91,13 @@ TWO_PART_WILCOXON_TEST <- function() {
   return(model)
 }
 
+ZERO_INFLATED_NORMAL <- function() {
+  model <- list()
+  class(model) <- c("zero_inflated_normal", "model")
+  model$parameters <- list()
+  model$repr <- "zero_inflated_normal"
+  model$name <- "Zero-Inflated Normal"
+  return(model)
+}
+
 source("R/models_and_tests/init_models_and_tests.R")

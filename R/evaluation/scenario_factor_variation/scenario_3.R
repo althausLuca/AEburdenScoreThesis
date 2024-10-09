@@ -5,10 +5,12 @@ library(latex2exp)
 
 source("R/models_and_tests/model_computer.R")
 
-model_folder <- "results/longer_event_durations"
+model_folder <- "results/longer_event_durations_500"
+store_name <- "plots/longer_p_values_500.pdf"
+
+
 model_files <- list.files(model_folder, full.names = TRUE)
 model_files <- model_files[!grepl("_qr", model_files)]
-
 
 models_to_exclude <- c(
                        "zero_inflate_wilcoxon",
@@ -20,7 +22,6 @@ models_to_exclude <- c(
                        "quantile_regression_tau_0.9_xy" ,
                        "quantile_regression_tau_0.1_xy")
 
-store_name <- "longer_p_values.pdf"
 
 source("R/helpers.R")
 
@@ -37,8 +38,7 @@ for (model_file in model_files) { # takes a while
   print(sig_p_values)
   for (model in names(sig_p_values)) {
     if (model %in% models_to_exclude) {
-      print("AAAAAAAAAAAAAAA")
-      print(model)
+      # print(model)
       next
     }
     df <- rbind(df, c(scenario_factor = scenario_factor, model = model, value = unname(sig_p_values[model])))

@@ -1,6 +1,6 @@
 
 library(gamlss)
-source("R/models_and_tests/models/zero_inflated_gamma/LRT_test.R")
+source("R/models_and_tests/models/LRT_test.R")
 
 fit_model.zero_inflated_gamma_model <- function(model , trial , sigma_per_group = model$parameters$sigma_per_group) {
   trial <- check_data(trial)

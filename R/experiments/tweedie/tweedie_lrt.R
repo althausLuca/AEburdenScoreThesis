@@ -6,10 +6,10 @@ source("R/evaluation/analysis_and_comparison/p_value_plot.R")
 library(mgcv)
 
 
-trial_data <- load_equal_trials()
+trial_data <- load_longer_trials()
 
-scenario <- "equal_1_infer"
-xi_ <- NULL
+scenario <- "longer_1_1.2_sub"
+xi_ <- 1.2
 link_power <- 1
 
 
@@ -62,6 +62,7 @@ GLM_LRT <- function(full_model){
 }
 
 lrt_func <- function(trial, xi = xi_) {
+  trial <- trial_sub_sampler(trial, 20)
   if (is.null(xi)) {
     profile_result.full <- tweedie.profile(trial$Score ~ trial$Group, link.power = link_power, xi.vec
       = seq(1.05, 2, by = 0.1), method = "interpolation") #interpolation is faster than inversion and yiels the same results
@@ -88,7 +89,6 @@ lrt_func <- function(trial, xi = xi_) {
   return(p_values)
 }
 
-
 results <- trial_data$apply_to_each(lrt_func, as.df = TRUE, limit = 1000)
 head(results)
 folder <- "R/experiments/tweedie/"
@@ -96,12 +96,15 @@ file_name <- paste0("tweedie_lrt_", scenario, xi_)
 
 save(results, file = paste0(folder, file_name, ".RData"))
 
+file_name <-"tweedie_lrt_longer_infer"
+load(paste0(folder, file_name, ".RData"))
 #(col, name , color)
 col_color_map <- list(c("current", "Wald", "red"),
                       # c("deviance_p_value", "LRT deviance", "blue"),
-                      c("ll_p_value", "LRT ", "black"),
+                      c("ll_p_value", "LRT ", "black")
             # c("p_value_F_model", "LRT F model", "green"),
-            c("p_value_F_bar", "LRT using Deviance", "purple"))
+            # c("p_value_F_bar", "LRT using Deviance", "purple")
+                      )
 
 p_plot_handler <- p_value_plot_handler()
 for (i in seq_along(col_color_map)) {

@@ -149,13 +149,23 @@ order_models <- function(model_reprs) {
   processed_names <- sapply(model_reprs, pre_process_name)
 
   models_with_anova <- grepl("anova", processed_names)
+  qr_models <- grepl("quantile_regression", processed_names)
+  tweedie_models <- grepl("tweedie", processed_names)
   zero_inflated_models <- grepl("zero_inflate", processed_names)
   two_part_tests <- grepl("two_part", processed_names)
+
   others <- !models_with_anova &
     !zero_inflated_models &
-    !two_part_tests
+    !two_part_tests &
+    !qr_models &
+    !tweedie_models
 
-  result <- c(model_reprs[models_with_anova], model_reprs[others], model_reprs[zero_inflated_models], model_reprs[two_part_tests])
+  result <- c(model_reprs[models_with_anova],
+              model_reprs[qr_models],
+              model_reprs[tweedie_models],
+              model_reprs[zero_inflated_models],
+              model_reprs[others],
+              model_reprs[two_part_tests])
   if (length(result) != length(model_reprs)) {
     stop("Error in ordering models")
   }

@@ -17,8 +17,8 @@ model_computer_name <- gsub(".csv", ".RData", basename(file_path))
 trial_data <- get_trial_data(file_path, result_path = "")
 
 
-# model_computer <- init_model_computer(trial_data, model_computer_name, result_folder)
-# add_models(model_computer, MODELS)
+model_computer <- init_model_computer(trial_data, model_computer_name, result_folder)
+add_models(model_computer, MODELS)
 
 model_computer_name_qr <- paste0( model_computer_name , "_qr")
 model_computer_name_qr <- init_model_computer(trial_data, model_computer_name_qr, result_folder)
