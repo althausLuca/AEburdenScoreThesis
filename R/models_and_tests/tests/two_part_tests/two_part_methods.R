@@ -1,5 +1,5 @@
 #' @param trial A data frame with columns Score and Group
-#' @param test A string specifying the test to use for the T statistic. Options are "ttest" (default), "ks", and "wilcoxon"
+#' @param test A string specifying the test to use for the T statistic. Options are "ttest" (default), "welch", "ks", and "wilcoxon"
 #' @return A list with the B statistic, T statistic, and p-value
 #' @description This function calculates the B statistic, T statistic, and p-value for a two part test
 #' @referenced in the paper Hypothesis Tests for Point-Mass Mixture Data with Application to `Omics Data with Many Zero Values
@@ -54,9 +54,13 @@ get_T <- function(trial, test = "ttest") {
     return(FALSE) # if there are less than 2 non-zero values in either group, return 0 and only use B statistic
   }
 
-  if (test == "ttest") {
-    T <- t.test(control_scores.c, treatment_scores.c, alternative = "two.sided")$statistic
-  } else if (test == "ks") {
+  if (test == "welch") {
+    T <- t.test(control_scores.c, treatment_scores.c, alternative = "two.sided", var.equal = FALSE)$statistic
+  }
+  else if (test == "ttest") {
+    T <- t.test(control_scores.c, treatment_scores.c, alternative = "two.sided", var.equal = TRUE)$statistic
+  }
+     else if (test == "ks") {
     T <- ks.test(control_scores.c, treatment_scores.c, alternative = "two.sided")$statistic
   } else if (test == "wilcoxon") {
     m_c <- n_control_c # first group
@@ -80,6 +84,8 @@ get_T <- function(trial, test = "ttest") {
     #   print(T)
     #   print(T.2)
     # }
+  } else {
+    stop("Invalid test type")
   }
 
   return(unname(T))

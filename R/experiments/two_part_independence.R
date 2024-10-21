@@ -2,12 +2,12 @@ source("R/trials/trial_loader.R")
 source("R/models_and_tests/tests/two_part_tests/two_part_methods.R")
 
 
-trials_data_loaders <- list("equal" = load_equal_trials, "longer" = load_longer_trials, "shorter" = load_shorter_trials)
+trials_data_loaders <- list("equal" = load_equal_trials
+)#, "longer" = load_longer_trials, "shorter" = load_shorter_trials)
 
 for (i in seq_along(trials_data_loaders)) {
   scenario <- names(trials_data_loaders)[[i]]
   trial_data <- trials_data_loaders[[i]]()
-
 
   plot_folder <- paste0("plots/two_part_scatter_plots/", scenario, "/")
   dir.create(plot_folder, showWarnings = FALSE, recursive = TRUE)
@@ -18,7 +18,7 @@ for (i in seq_along(trials_data_loaders)) {
   B_T_P_t <- trial_data$apply_to_each(test_t, limit = 5000, as.df = TRUE)
 
   B_T_P_wilcoxon$B <- unlist(B_T_P_wilcoxon$B)
-  B_T_P_wilcoxon$T <- -unlist(B_T_P_wilcoxon$T)
+  B_T_P_wilcoxon$T <- unlist(B_T_P_wilcoxon$T)
   B_T_P_t$B <- unlist(B_T_P_t$B)
   B_T_P_t$T <- unlist(B_T_P_t$T)
 
@@ -81,3 +81,6 @@ for (i in seq_along(trials_data_loaders)) {
 # cor.test(x,y, method = "pearson")
 
 var(B_T_P_t$B,B_T_P_t$T)/sd(B_T_P_t$B)/sd(B_T_P_t$T)
+
+mean(unlist(B_T_P_t$p_value) < 0.05)
+mean(unlist(B_T_P_wilcoxon$p_value) < 0.05)

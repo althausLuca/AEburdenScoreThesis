@@ -83,9 +83,6 @@ g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   scale_color_manual(values = colors_, labels = labels_, breaks = model_names_) +
   scale_linetype_manual(values = line_types_, labels = labels_, breaks = model_names_) +
   scale_shape_manual(values = markers_, labels = labels_, breaks = model_names_) +
-  # scale_color_manual(values=brown_palette, labels = named_labels) +
-  # scale_linetype_discrete(labels = named_labels) +
-  # scale_shape_discrete(labels = labels_) +
   labs(x = x_lab, y = y_lab, title = "") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5), legend.text = element_text(size = 15), legend.title = element_text(size = 0)) +

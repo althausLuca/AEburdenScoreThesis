@@ -2,10 +2,8 @@ source("R/models_and_tests/model_computer.R")
 
 scenario <- "shorter"
 
-
 folder <- "results/sample_size_variation"
 files <- list.files(folder, full.names = TRUE)
-
 files <- files[grep(scenario, files)]
 
 for(file in files) {

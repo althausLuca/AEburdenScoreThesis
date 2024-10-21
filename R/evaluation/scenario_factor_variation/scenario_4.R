@@ -11,8 +11,18 @@ result_folder <- "results/more_severe_events/"
 models_to_exclude <- c("tweedie_var_power_1.5_link_power_0", "zero_inflate_wilcoxon", "quantile_regression_tau_0.5","zero_inflated_ttest","log_anova_c_10000")
 # list folder
 model_files <- list.files(result_folder, full.names = TRUE)
+model_files <- model_files[!grepl("_qr", model_files)]
 
+model_file.1 <- "results/more_severe_events/all_mostly_severe_experimental.RData"
+model_computer.1 <- load_model_computer(model_file.1)
+summary.trial_data(model_computer.1$trial_data)
 
+model_file.2 <-"results/more_severe_events/next_level_experimental.RData"
+model_computer.2 <- load_model_computer(model_file.2)
+summary.trial_data(model_computer.2$trial_data)
+
+mean(get_value(model_computer.1, "p_value")[,3] < 0.05)
+mean(get_value(model_computer.2, "p_value")[,3] < 0.05)
 
 df <- NULL
 for (model_file in model_files) { # takes a while

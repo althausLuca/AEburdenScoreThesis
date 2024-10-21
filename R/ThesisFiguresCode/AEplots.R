@@ -16,7 +16,7 @@ plot_ae <- function(ae_data, color = "green", max_time = 180, by = 10, save = ""
     theme(legend.position = "none", plot.margin = margin(0.2, 0.5, 0.2, 0.2, "cm"))
   #add score to plot
   if (score == TRUE) {
-    g <- g + geom_text(aes(x = 5, y = 5, label = paste("Score:", ae_data$score)), size = 4, hjust = 0)
+    g <- g + geom_text(aes(x = 5, y = 4.6, label = paste("Score:", ae_data$score)), size = 4, hjust = 0)
   }
   ## add finish line with label
   if (death == TRUE) {
@@ -57,32 +57,32 @@ ae_data_2 <- list(
     End = c(40, 70, 120) + c(20, 10, 30)  # End position is Start position plus Duration
   ),
   n_events = 3,
-  score = 2 * 20 + 4 * 10 + 3 * 30
+  score = 1 * 20 + 3 * 10 + 2 * 30
 )
 
-plot_ae(ae_data, save = "ae11.png", color = "limegreen")
-plot_ae(ae_data_2, color = "tomato", save = "ae12.png")
+plot_ae(ae_data, save = "ae11.pdf", color = "limegreen")
+plot_ae(ae_data_2, color = "tomato", save = "ae12.pdf")
 
-
-ae_data_death.1 <- list(
-  info = data.frame(
-    Severity = c(3, 3, 0),
-    Start = c(45, 60, 120),      # Start position of each AE
-    End = c(45, 60, 120) + c(5, 15, 60)  # End position is Start position plus Duration
-  ),
-  n_events = 3,
-  score = 2 * 20 + 4 * 10 + 4 * 60
-)
-plot_ae(ae_data_death.1, color = "limegreen", save = "ae_data_death.1.png", death = TRUE)
-
-ae_data_death.2 <- list(
-  info = data.frame(
-    Severity = c(2, 3, 0),
-    Start = c(10, 60, 120),      # Start position of each AE
-    End =  c(10, 60, 120)   + c(20, 60, 60)  # End position is Start position plus Duration
-  ),
-  n_events = 3,
-  score = 2 * 20 + 3 * 60 + 4 * 60
-)
-
-plot_ae(ae_data_death.2, color = "tomato", save = "ae_data_death.2.png", death = TRUE)
+#
+# ae_data_death.1 <- list(
+#   info = data.frame(
+#     Severity = c(3, 3, 0),
+#     Start = c(45, 60, 120),      # Start position of each AE
+#     End = c(45, 60, 120) + c(5, 15, 60)  # End position is Start position plus Duration
+#   ),
+#   n_events = 3,
+#   score = 2 * 20 + 4 * 10 + 4 * 60
+# )
+# plot_ae(ae_data_death.1, color = "limegreen", save = "ae_data_death.1.png", death = TRUE)
+#
+# ae_data_death.2 <- list(
+#   info = data.frame(
+#     Severity = c(2, 3, 0),
+#     Start = c(10, 60, 120),      # Start position of each AE
+#     End =  c(10, 60, 120)   + c(20, 60, 60)  # End position is Start position plus Duration
+#   ),
+#   n_events = 3,
+#   score = 2 * 20 + 3 * 60 + 4 * 60
+# )
+#
+# plot_ae(ae_data_death.2, color = "tomato", save = "ae_data_death.2.png", death = TRUE)

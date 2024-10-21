@@ -73,11 +73,11 @@ PERMUTATION_TEST <- function(n_permutations = 10000) {
   return(model)
 }
 
-TWO_PART_T_TEST <- function() {
+TWO_PART_T_TEST <- function(use_welch = FALSE) {
   model <- list()
   class(model) <- c("two_part_t_test", "test")
-  model$parameters <- list()
-  model$repr <- "two_part_ttest"
+  model$parameters <- list(use_welch = use_welch)
+  model$repr <- ifelse(!use_welch , "two_part_ttest" , "two_part_welch")
   model$name <- "Zero-Inflated T-Test"
   return(model)
 }

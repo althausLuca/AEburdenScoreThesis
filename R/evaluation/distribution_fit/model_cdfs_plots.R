@@ -1,6 +1,7 @@
 model_cdf_plots <- function(model, trial_data,
                             scenario_name = "",
-                            plot_path = "plots/model_distributions/") {
+                            plot_path = "plots/model_distributions/",
+                            limit=NULL) {
 
   if (scenario_name != "") {
     plot_path <- paste0(plot_path, scenario_name, "/")
@@ -10,7 +11,7 @@ model_cdf_plots <- function(model, trial_data,
   source("R/evaluation/analysis_and_comparison/distribution_plot.R")
 
 
-  CDFS <- trial_data$apply_to_each(function(trial) fit_model(model, trial)$get_CDFs(x))
+  CDFS <- trial_data$apply_to_each(function(trial) fit_model(model, trial)$get_CDFs(x), limit = limit)
 
   control_densities <- lapply(CDFS, function(CDF) CDF$control)
   treatment_densities <- lapply(CDFS, function(CDF) CDF$treatment)

@@ -7,9 +7,12 @@ fit_model.tweedie_glm_model <- function(model , trial,
   intial_xi <- xi
   trial <- check_data(trial)
   if (xi == "infer") {
-    print("infering xi using tweedie.profile()")
-    profile_result <- tweedie.profile(trial$Score ~ trial$Group, link.power = link_power, fit.glm = F, xi.vec
-      = seq(1.05, 2, by = 0.1))
+    print("infering xi using profile likelihood")
+    profile_result <- tweedie.profile(trial$Score ~ trial$Group,
+                                      link.power = link_power,
+                                      fit.glm = F,
+                                      xi.vec = seq(1.05, 2, by = 0.1),
+                                      method = "interpolation")
 
     xi <- profile_result$xi.max
 

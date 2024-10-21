@@ -47,7 +47,7 @@ log_likelihood <- function(Scores, dist = "gamma", fix.arg = NULL) {
   return(list(ll = ll_zero + ll_non_zero, estimates = fit_dist$estimate))
 }
 
-LRT_test <- function(trial, dist = "gamma", fix_arg = TRUE) {
+LRT_test <- function(trial, dist = "gamma", fix_arg = TRUE , full_results=FALSE) {
 
   if (!(dist %in% c("gamma", "lnorm", "norm"))) {
     stop("Distribution not supported")
@@ -73,6 +73,13 @@ LRT_test <- function(trial, dist = "gamma", fix_arg = TRUE) {
 
   LRT_statistic <- -2 * (ll_H0 - ll_HA)
   p_value <- pchisq(LRT_statistic, df = df, lower.tail = FALSE)
+
+  if(full_results){
+    return(list(p_value = p_value,
+                LRT_statistic = LRT_statistic,
+                ll_H0 = ll_H0,
+                ll_HA = ll_HA))
+  }
   return(p_value)
 }
 

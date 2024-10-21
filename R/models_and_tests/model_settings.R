@@ -109,8 +109,22 @@ get_line_style <- function(model_name) {
 }
 
 
+
+map_labels <- function(model_names) {
+  #check if it is a string
+  if (length(model_names)==1) {
+        return(map_label(model_names))
+  }
+  else{
+    for(i in 1:length(model_names)){
+      model_names[[i]] <- map_label(model_names[i])
+    }
+  }
+  return(model_names)
+}
+
 # Return Label for latex expressions using library(latex2exp)
-map_labels <- function(model_name) {
+map_label <- function(model_name) {
   if (grepl("tau_0.5", model_name)) {
     return("Median Regression")
   }
@@ -135,7 +149,8 @@ map_labels <- function(model_name) {
     log_anova = "Log-ANOVA",
     two_part_t_test = "Two-Part T-Test",
     zero_inflated_lognormal = "Zero-Inflated Lognormal",
-    two_part_wilcoxon = "Two-Part Wilcoxon Test"
+    two_part_wilcoxon = "Two-Part Wilcoxon Test",
+    zero_inflated_normal = "Zero-Inflated Normal"
   )
   if (model_name %in% names(model_labels)) {
     return(model_labels[[model_name]])
