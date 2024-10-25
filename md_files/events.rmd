@@ -64,14 +64,14 @@ max_time: Maximum time to simulate events (in days)
 
 par(mfrow = c(2, 2))
 
-event <- AE(time_to_first_event = 10, event_duration = 5, time_between_events = 25, severity_probability = SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 10, event_duration = 5, time_between_events = 25, severity_probabilities = SEVERITY_PROBABILITIES$equal)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = 10000)
 h<-score_distribution(scores(simulated_events),main=NULL,
                    sub=str(event))
                    
 
 ###  increasing the time to the first event
-event <- AE(time_to_first_event = 100, event_duration = 5, time_between_events = 25,  severity_probability = SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 100, event_duration = 5, time_between_events = 25, severity_probabilities = SEVERITY_PROBABILITIES$equal)
 
 simulated_events<- simulate_events(list(event),max_time=180,n_it = 10000)
 
@@ -80,7 +80,7 @@ h<-score_distribution(scores(simulated_events),main=NULL,
 
 ### increasing the time to the first event excluding 0
 event <- AE(time_to_first_event = 1000, event_duration = 5, time_between_events = 25,
-            severity_probability = SEVERITY_PROBABILITIES$equal)
+            severity_probabilities = SEVERITY_PROBABILITIES$equal)
 
 simulated_events<- simulate_events(list(event),max_time=180,n_it = 10000)
 
@@ -103,16 +103,16 @@ c2 <- rgb(144, 238, 144, max = 255, alpha = 60)
 c3 <- rgb(173, 216, 230, max = 255, alpha = 60)
 n_it <- 10000
 
-event <- AE(time_to_first_event = 20, event_duration = 100, time_between_events = 25, severity_probability = SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 20, event_duration = 100, time_between_events = 25, severity_probabilities = SEVERITY_PROBABILITIES$equal)
 simulated_events.high_duration<- simulate_events(list(event),max_time=180,n_it = n_it)
 h3 <- score_distribution(scores(simulated_events.high_duration),col=c1,ymax=ymax)
 
-event <- AE(time_to_first_event = 20, event_duration = 10, time_between_events = 25, severity_probability = SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 20, event_duration = 10, time_between_events = 25, severity_probabilities = SEVERITY_PROBABILITIES$equal)
 simulated_events.medium_duration<- simulate_events(list(event),max_time=180,n_it = n_it)
 
 h2 <- score_distribution(scores(simulated_events.medium_duration),add=TRUE,col = c2,breaks=h3$breaks)
 
-event <- AE(time_to_first_event = 20, event_duration = 2, time_between_events = 25, severity_probability = SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 20, event_duration = 2, time_between_events = 25, severity_probabilities = SEVERITY_PROBABILITIES$equal)
 simulated_events.small_duration<- simulate_events(list(event),max_time=180,n_it = n_it)
 
 h1 <- score_distribution(scores(simulated_events.small_duration),col = c3,add=TRUE,breaks=h3$breaks)
@@ -127,17 +127,17 @@ legend("topright", title ="duration(Days)",legend = c("100", "10", "2"), fill = 
 par(mfrow = c(1,1))
 ymax=3500
 
-event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probability =SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probabilities =SEVERITY_PROBABILITIES$equal)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = n_it)
 h1<-score_distribution(scores(simulated_events),col=c1,ymax=ymax)
 
 ### Doubling the event duration
-event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 20, severity_probability = SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 20, severity_probabilities = SEVERITY_PROBABILITIES$equal)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = n_it)
 h2<-score_distribution(scores(simulated_events),col=c2,add=TRUE,breaks=h1$breaks)
 
 ###  increasing the event duration
-event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 100, severity_probability = SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 100, severity_probabilities = SEVERITY_PROBABILITIES$equal)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = n_it)
 h2<-score_distribution(scores(simulated_events),col=c3,add=TRUE,breaks=h1$breaks)
 
@@ -153,16 +153,16 @@ par(mfrow = c(1,1))
 ymax=3500
 breaks <- seq(0,450,5)
 
-event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probability =SEVERITY_PROBABILITIES$high)
+event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probabilities =SEVERITY_PROBABILITIES$high)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = n_it)
 h1 <-score_distribution(scores(simulated_events),col=c1,ymax=ymax,breaks=breaks)
 
-event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probability = SEVERITY_PROBABILITIES$medium)
+event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probabilities = SEVERITY_PROBABILITIES$medium)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = n_it)
 h2<-score_distribution(scores(simulated_events),col=c2,add=TRUE,breaks=breaks)
 
 ###  increasing the event duration
-event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probability = SEVERITY_PROBABILITIES$low)
+event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probabilities = SEVERITY_PROBABILITIES$low)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = n_it)
 h3<-score_distribution(scores(simulated_events),col=c3,add=TRUE,breaks=breaks)
 
@@ -178,11 +178,11 @@ n_it = 10000
 breaks =seq(0,1000,10)
 ymax = 1000
 
-event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probability =SEVERITY_PROBABILITIES$high)
+event <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probabilities =SEVERITY_PROBABILITIES$high)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = n_it)
 h1 <-score_distribution(scores(simulated_events),col=c1,ymax=ymax,breaks=breaks)
 
-event <- AE(time_to_first_event = 0, event_duration = 10, time_between_events = 6.3, severity_probability =SEVERITY_PROBABILITIES$equal)
+event <- AE(time_to_first_event = 0, event_duration = 10, time_between_events = 6.3, severity_probabilities =SEVERITY_PROBABILITIES$equal)
 simulated_events<- simulate_events(list(event),max_time=180,n_it = n_it)
 h1<-score_distribution(scores(simulated_events),col=c2,add=TRUE,breaks=breaks)
 ```
@@ -195,8 +195,8 @@ par(mfrow = c(2,1))
 breaks =seq(0,700,10)
 ymax = 1400
 
-event.high <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probability =SEVERITY_PROBABILITIES$high)
-event.low <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probability =SEVERITY_PROBABILITIES$low)
+event.high <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probabilities =SEVERITY_PROBABILITIES$high)
+event.low <- AE(time_to_first_event = 20, event_duration = 5, time_between_events = 5, severity_probabilities =SEVERITY_PROBABILITIES$low)
 
 simulated_events.high<- simulate_events(list(event.high),max_time=180,n_it = n_it)
 

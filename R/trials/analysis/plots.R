@@ -29,7 +29,7 @@ hist_and_box_plot <- function(scores, n_events = NULL, save = TRUE, include_zero
   }
 
   if (save) {
-    file_name <- paste0("plots/trials/", file_name)
+    file_name <- paste0(file_name)
     pdf(file_name, width = 7, height = 10)
   }
 

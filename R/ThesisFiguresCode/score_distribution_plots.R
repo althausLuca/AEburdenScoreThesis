@@ -1,4 +1,4 @@
-source("R/Scenarios.R")
+source("R/data_generation/Scenarios.R")
 library(ggplot2)
 library(gridExtra)
 

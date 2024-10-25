@@ -47,7 +47,7 @@ fit_model.zero_inflated_gamma_model <- function(model , trial , sigma_per_group 
   AIC <- AIC(gamlss_model)
 
   print("Running LRT test zero-inflated gamma model")
-  p_value <- LRT_test(trial, dist = "gamma", fix_arg = TRUE)
+  p_value <- LRT_test(trial, dist = "gamma", fix_arg = !sigma_per_group)
 
   get_CDFs <-  function(x) {
     sigma_control <- ifelse(sigma_per_group, estimates$sigma_control, estimates$sigma)

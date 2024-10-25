@@ -1,9 +1,5 @@
 source("R/AdverseEvents/event_simulation.R")
 
-
-# path to store trials
-result_path <- "data/trials/"
-
 #' Simulate a trial group with a given set of AEs and specified susceptibility parameters
 #' @param AEs A list of Adverse Events to simulate
 #' @param susceptibility_parameter A list of parameters for the susceptibility distribution
@@ -11,7 +7,6 @@ result_path <- "data/trials/"
 #' @param max_time Maximum time to simulate events (in days)
 #' @stores the trial data to a csv file in the result_path with the scenario name
 simulate_group <- function(AEs, size = 100, susceptibility_parameter = list("gamma", 1.5), max_time = 180) {
-
   # convert AEs to list if they are not
   if (!is.list(AEs[[1]])) {
     AEs <- lapply(1:nrow(AEs), function(i) as.list(AEs[i,]))
@@ -64,23 +59,19 @@ simulate_trials_from_scenario <- function(scenario, n_sim = 5000,
                                           susceptibility_parameter = list("gamma", 1.5),
                                           death = FALSE,
                                           save = TRUE,
-                                          file_name = NULL, trial_group_size = 100) {
+                                          file_name = NULL, trial_group_size = 100 , result_path = "data/trials/") {
   print("generating scores")
-  print(scenario$name)
-
   if (is.null(file_name)) {
     file_name <- scenario$name
   }
   file_path <- paste0(result_path, file_name, ".csv")
 
-  print("file stored to")
-  print(file_path)
-  treatment_AEs <- lapply(1:nrow(scenario$treatment), function(i) as.list(scenario$treatment[i,]))
-  control_AEs <- lapply(1:nrow(scenario$control), function(i) as.list(scenario$control[i,]))
+
+  treatment_AEs <- scenario$treatment
+  control_AEs <- scenario$control
 
   # Open CSV file in append mode
   file.remove(file_path, showWarnings = FALSE)
-
 
   if (!dir.exists(dirname(file_path))) {
     dir.create(dirname(file_path), recursive = TRUE)

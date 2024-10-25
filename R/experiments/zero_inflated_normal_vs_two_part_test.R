@@ -1,6 +1,6 @@
 source("R/models_and_tests/models_and_tests.R")
 source("R/trials/trial_loader.R")
-source("R/evaluation/analysis_and_comparison/p_value_plot.R")
+source("R/evaluation/plot_functions/p_value_plot.R")
 
 
 t_test <- TWO_PART_T_TEST()
@@ -12,8 +12,8 @@ fuc <- function(trial){
   return(list(lrt_p_value = lrt_p_value, two_part_test_p_value = two_part_test_p_value))
 }
 
-for(scenario in names(scenario_loaders)){
-  trial_data <- scenario_loaders[[scenario]]()
+for(scenario in names(default_scenario_loaders)){
+  trial_data <- default_scenario_loaders[[scenario]]()
 
   results <- trial_data$apply_to_each(fuc, as.df = TRUE)
 

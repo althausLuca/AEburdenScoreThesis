@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(latex2exp)
-# source("R/simulations/default_models.R")
+# source("R/run_models/default_models.R")
 source("R/models_and_tests/model_computer.R")
 source("R/helpers.R")
 

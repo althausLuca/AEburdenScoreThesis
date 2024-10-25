@@ -1,5 +1,5 @@
 source("R/AdverseEvents/helpers.R")
-source("R/scenario_configuration.R")
+source("R/data_generation/scenario_configuration.R")
 
 library(ggplot2)
 library(gridExtra)

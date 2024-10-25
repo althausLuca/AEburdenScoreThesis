@@ -1,6 +1,5 @@
 source("R/trials/trial_data.R")
 
-
 #' Get the file path for a given file name
 #' @param file_name A file name or path
 #' @param result_path The path to the result files (defualts to "data/trials/")
@@ -87,7 +86,7 @@ trial_sub_sampler <- function(trial, group_size=30){
 
 #' Load  trial data from the scenariio with shorter gap times
 load_shorter_trials <- function(){
-  file <- "Scenario_2_k_1.5_s_0.5.csv"
+  file <- "s2_k_1.5_s_0.5.csv"
   trial_data <- get_trial_data(file)
   trial_data[["name"]] <- "shorter_gap_times"
   return(trial_data)
@@ -95,7 +94,7 @@ load_shorter_trials <- function(){
 
 #' Load trial data from the scenario with longer event times
 load_longer_trials <- function(){
-  file <- "Scenario_3_k_1.5_l_3.5.csv"
+  file <- "s3_k_1.5_l_3.5.csv"
   trial_data <- get_trial_data(file)
   trial_data[["name"]] <- "longer_events"
   return(trial_data)
@@ -103,14 +102,14 @@ load_longer_trials <- function(){
 
 #' Load trial data from the scenario with equal parameters
 load_equal_trials <- function(){
-  file <- "Scenario_3_k_1.5_l_1.csv"
+  file <- "s3_k_1.5_l_1.csv"
   trial_data <- get_trial_data(file)
   trial_data[["name"]] <- "equal"
   return(trial_data)
 }
 
-
-scenario_loaders <- list(
+#default scenarios
+default_scenario_loaders <- list(
   shorter_gap_times = load_shorter_trials,
   longer_events = load_longer_trials,
   equal = load_equal_trials

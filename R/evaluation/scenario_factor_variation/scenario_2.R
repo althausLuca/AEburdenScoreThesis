@@ -2,53 +2,23 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(latex2exp)
-# source("R/simulations/default_models.R")
+# source("R/run_models/default_models.R")
 source("R/models_and_tests/model_computer.R")
 source("R/helpers.R")
+source("R/evaluation/prop_of_p_values/functions.R")
 
+model_folder <- "results_24_10/shorter_gap_times"
+store_name <- "plots/shorter_p_values.pdf"
 
-model_folder <- "results/shorter_gap_times_500"
-store_name <- "plots/shorter_p_values_500.pdf"
+df <- get_p_value_df(model_folder, factor_prefix = "_s_")
 
-models_to_exclude <- c("tweedie_var_power_1.5_link_power_0", "zero_inflate_wilcoxon", "quantile_regression_tau_0.5","zero_inflated_ttest","log_anova_c_10000")
-model_files <- list.files(model_folder, full.names = TRUE)
-
-#files without _qr
-model_files <- model_files[!grepl("_qr", model_files)]
-
-# model_file <- "results/shorter_gap_times/Scenario_2_k_1.5_s_1.RData"
-# model_computer <- load_model_computer(model_file)
-# add_model(model_computer, TWO_PART_WILCOXON_TEST(), recompute = TRUE)
-
-df <- NULL
-for (model_file in model_files) { # takes a while
-  scenario_factor <- get_prefixed_number(model_file, "_s_")
-  print(scenario_factor)
-
-  model_computer <- load_model_computer(model_file)
-
-  p_values <- get_value(model_computer, "p_value")
-  sig_p_values <- colMeans(p_values < 0.05, na.rm = TRUE)
-  print(sig_p_values)
-  for (model in names(sig_p_values)) {
-    if (model %in% models_to_exclude) {
-      next
-    }
-    df <- rbind(df, c(scenario_factor = scenario_factor, model = model, value = unname(sig_p_values[model])))
-  }
-
-}
-
-
-df <- data.frame(df)
-df$value <- as.numeric(df$value)
 df$scenario_factor <- as.numeric(df$scenario_factor)
 df <- df[order(df$scenario_factor, decreasing = FALSE),]
 
 
-source("R/models_and_tests/model_settings.R")
-
 base_level <- 1.0
+x_lab <- "Factor (Experimental/Control) for expected gap time between events"
+y_lab <- "Proportion of Significant P-values"
 
 model_names_ <- order_models(unique(df$model))
 
@@ -57,32 +27,34 @@ line_types_ <- setNames(unlist(lapply(model_names_, get_line_style)), model_name
 markers_ <- setNames(unlist(lapply(model_names_, get_marker)), model_names_)
 labels_ <- lapply(model_names_, function(x) TeX(map_labels(x)))
 named_labels <- setNames(labels_, model_names_)
-brown_palette <- c("#8B4513", "#A0522D", "#D2691E", "#DEB887", "#CD853F", "#F4A460")
 
-x_lab <- "Factor (Experimental/Control) for expected gap time between events"
-y_lab <- "Proportion of Significant P-values"
 
 
 transfromation <- scales::trans_new("log_reverse",
                                     transform = function(x) -log(x),
                                     inverse = function(x) exp(-x))
 
-df <- df[df$scenario_factor >= 0.1,]
+unique(df$scenario_factor)
 levels <- unique(df$scenario_factor)
-levels.r <- round(levels, 1)
-levels <- ifelse(levels == levels.r, levels.r, levels)
 
 #remove some levels for the plot axis and markers
 levels <- levels[!levels %in% c(0.4, 0.6, 0.7, 0.9)]
+levels <- ifelse(levels == round(levels, 1), round(levels, 1) , levels)
 
-df$model_names <- sapply(df$model, function(x) TeX(map_labels(x)))
 
+breaks <- config$model_reprs
+colors_ <- setNames(unlist(lapply(breaks, config$get_color)), breaks)
+line_types_ <- setNames(unlist(lapply(breaks, config$get_line_style)), breaks)
+markers_ <- setNames(unlist(lapply(breaks, config$get_marker)), breaks)
+labels_ <- sapply(breaks, function(x) TeX(config$get_label(x)))
+
+#, breaks = model_names_
 g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   geom_line(aes(color = model, linetype = model), size = 1.1) +
   geom_point(data = subset(df, scenario_factor %in% levels), aes(color = model, shape = model), size = 3, stroke = 2) +
-  scale_color_manual(values = colors_, labels = labels_, breaks = model_names_) +
-  scale_linetype_manual(values = line_types_, labels = labels_, breaks = model_names_) +
-  scale_shape_manual(values = markers_, labels = labels_, breaks = model_names_) +
+  scale_color_manual(values = colors_, labels = labels_, breaks = breaks) +
+  scale_linetype_manual(values = line_types_, labels = labels_, breaks = breaks) +
+  scale_shape_manual(values = markers_, labels = labels_, breaks = breaks) +
   labs(x = x_lab, y = y_lab, title = "") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5), legend.text = element_text(size = 15), legend.title = element_text(size = 0)) +

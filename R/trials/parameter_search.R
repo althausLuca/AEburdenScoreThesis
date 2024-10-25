@@ -2,7 +2,7 @@
 
 rm(list = ls())
 
-source("R/AdverseEvents/AdverseEvents.R")
+source("../AdverseEvents/AdverseEvent.R")
 source("R/trials/trial_simulation.R")
 source("R/Scenarios.R")
 library(tidyverse)

@@ -8,7 +8,7 @@ fit <- fit_model.zero_inflated_normal(, trial)
 plot_CDFs(fit, trial)
 
 
-source("R/evaluation/analysis_and_comparison/distribution_plot.R")
+source("R/evaluation/plot_functions/distribution_plot.R")
 
 
 

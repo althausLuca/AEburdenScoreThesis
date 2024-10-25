@@ -17,11 +17,12 @@ LOG_ANOVA <- function(c = 0.001) {
   return(model)
 }
 
-TWEEDIE_REGRESSION <- function(var_power = 1.5, link_power = 0, xi = var_power) {
+TWEEDIE_REGRESSION <- function(var_power = 1.5, link_power = 0, xi = var_power , use_mle = F) {
   model <- list()
   class(model) <- c("tweedie_glm_model", "model")
-  model$parameters <- list(link_power = link_power, xi = xi)
-  model$repr <- paste0("tweedie_var_power_", xi, "_link_power_", link_power)
+  model$parameters <- list(link_power = link_power, xi = xi , use_mle = use_mle)
+  base_repr <- paste0("tweedie_var_power_", xi, "_link_power_", link_power)
+  model$repr <- ifelse(use_mle, paste0(base_repr, "_mle"), base_repr)
   model$name <- "Tweedie"
   return(model)
 }
@@ -91,11 +92,11 @@ TWO_PART_WILCOXON_TEST <- function() {
   return(model)
 }
 
-ZERO_INFLATED_NORMAL <- function() {
+ZERO_INFLATED_NORMAL <- function(sigma_per_group = FALSE) {
   model <- list()
   class(model) <- c("zero_inflated_normal", "model")
-  model$parameters <- list()
-  model$repr <- "zero_inflated_normal"
+  model$parameters <- list(sigma_per_group = sigma_per_group)
+  model$repr <- ifelse(!sigma_per_group,"zero_inflated_normal", "zero_inflated_normal_per_group")
   model$name <- "Zero-Inflated Normal"
   return(model)
 }

@@ -42,13 +42,15 @@ plot_ae <- function(ae_data, color = "green", max_time = 180, by = 10, save = ""
 
 ae_data <- list(
   info = data.frame(
-    Severity = c(2, 2),
-    Start = c(10, 60),      # Start position of each AE
-    End = c(10 + 30, 60 + 10)  # End position is Start position plus Duration
+    Severity = c(1, 2),
+    Start = c(60, 155),
+    End = c(80, 190)  # End position is Start position plus Duration
   ),
   n_events = 2,
-  score = 2 * 30 + 2 * 10
+  score = 1 * 20 + 2*25
 )
+
+
 
 ae_data_2 <- list(
   info = data.frame(
@@ -60,8 +62,27 @@ ae_data_2 <- list(
   score = 1 * 20 + 3 * 10 + 2 * 30
 )
 
-plot_ae(ae_data, save = "ae11.pdf", color = "limegreen")
-plot_ae(ae_data_2, color = "tomato", save = "ae12.pdf")
+
+library(latex2exp)
+#define latex symbols
+lambda_1_1 <- TeX("$\\lambda_{1,1}$")
+paranthese <- "{" # TeX(r"(\{)")
+
+g <- plot_ae(ae_data, save = "ae11.pdf", color = "limegreen")
+g <- g + coord_cartesian(clip = 'off')
+
+# # add lambda_1_1 to the plot
+# g <- g + annotate("text", fontface = "plain",
+#                   hjust=1, vjust=0,
+#                   x = 80, y = 0, label = paranthese, size = 9 , angle = 90)
+#
+# g <- g + annotate("text",fontface="italic", vjust = 1.3, hjust=0, x = 65, y = 0, label = lambda_1_1, size = 6)
+#
+# g
+ggsave("test.png", plot = g, width = 10, height = 6, units = "cm", dpi = 600)
+
+
+plot_ae(ae_data_2, color = "tomato", save = "ae12.png")
 
 #
 # ae_data_death.1 <- list(

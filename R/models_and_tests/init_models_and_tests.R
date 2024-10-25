@@ -17,7 +17,6 @@ run_test.default <- function(test, trial, ...) {
   stop(paste0("No run_test function for test ", test$name, " found, test has class ", class(test)))
 }
 
-
 #source fit functions for models
 sapply(grep("fit_model.R", list.files("R/models_and_tests", full.names = TRUE, recursive = TRUE), value = TRUE)
   , source)

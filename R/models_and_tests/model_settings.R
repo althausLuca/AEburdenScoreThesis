@@ -52,6 +52,7 @@ get_color <- function(model_name) {
   return(unname(color))
 }
 
+
 get_marker <- function(model_name) {
   model_name <- pre_process_name(model_name)
   shape <- switch(model_name,

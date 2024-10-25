@@ -1,7 +1,7 @@
 library(tweedie)
 source("R/trials/trial_loader.R")
 source("R/models_and_tests/models_and_tests.R")
-source("R/evaluation/analysis_and_comparison/p_value_plot.R")
+source("R/evaluation/plot_functions/p_value_plot.R")
 
 library(mgcv)
 

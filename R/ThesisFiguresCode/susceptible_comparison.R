@@ -1,12 +1,13 @@
-source("R/Scenarios.R")
+source("R/data_generation/Scenarios.R")
 source("R/trials/subject.R")
 source("R/trials/trial_simulation.R")
 source("R/trials/trial_analysis.R")
+source("R/AdverseEvents/AdverseEvent.R")
 
-
-adverse_events <- list(AE( 2, 100),
-                       AE( 5, 200),
-                       AE( 3, 300))
+severity_probabilities <- c(0.6, 0.3, 0.1)
+adverse_events <- list(AE( 2, 100,severity_probabilities),
+                       AE( 5, 200,severity_probabilities),
+                       AE( 3, 300,severity_probabilities))
 
 adverse_events
 subjects.0 <- create_subjects(adverse_events, susceptibility = c("constant",1), group = "treatment", sample_size = 100)

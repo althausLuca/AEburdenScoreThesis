@@ -1,11 +1,11 @@
 # File illustrating the use of the AdverseEvents functions
 
-source("R/AdverseEvents/AdverseEvents.R")
+source("R/AdverseEvents/AdverseEvent.R")
 source("R/AdverseEvents/event_simulation.R")
 source("R/AdverseEvents/Vizualisation.R")
 
 
-AE_def <- AE(10, 30,severity_probability=c(1/3,1/3,1/3) , 30)
+AE_def <- AE(10, 30, severity_probabilities=c(1/3, 1/3, 1/3))
 
 simulated_AE <- simulate_event(AE_def, 180 , susceptibility = 1)
 simulated_AE$info

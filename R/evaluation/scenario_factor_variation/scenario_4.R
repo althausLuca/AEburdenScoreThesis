@@ -2,27 +2,19 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(latex2exp)
-
-source("R/helpers.R")
+# source("R/run_models/default_models.R")
 source("R/models_and_tests/model_computer.R")
-source("R/trials/trial_data.R")
+source("R/helpers.R")
+source("R/evaluation/prop_of_p_values/functions.R")
 
-result_folder <- "results/more_severe_events/"
+model_folder <- "results_24_10/more_severe_events"
+store_name <- "plots/more_severe_events.pdf"
+
 models_to_exclude <- c("tweedie_var_power_1.5_link_power_0", "zero_inflate_wilcoxon", "quantile_regression_tau_0.5","zero_inflated_ttest","log_anova_c_10000")
 # list folder
-model_files <- list.files(result_folder, full.names = TRUE)
+model_files <- list.files(model_folder, full.names = TRUE)
 model_files <- model_files[!grepl("_qr", model_files)]
 
-model_file.1 <- "results/more_severe_events/all_mostly_severe_experimental.RData"
-model_computer.1 <- load_model_computer(model_file.1)
-summary.trial_data(model_computer.1$trial_data)
-
-model_file.2 <-"results/more_severe_events/next_level_experimental.RData"
-model_computer.2 <- load_model_computer(model_file.2)
-summary.trial_data(model_computer.2$trial_data)
-
-mean(get_value(model_computer.1, "p_value")[,3] < 0.05)
-mean(get_value(model_computer.2, "p_value")[,3] < 0.05)
 
 df <- NULL
 for (model_file in model_files) { # takes a while
@@ -64,41 +56,32 @@ df$scenario_factor <- factor(converted_factors, levels = unname(factor_names))
 
 df <- df[is.na(df$scenario_factor) == FALSE,]
 
-# df <- df[order(df$scenario_factor, decreasing = FALSE),]
-
-
-source("R/models_and_tests/model_settings.R")
-
-
-model_names_ <- order_models(unique(df$model))
-
-colors_ <- setNames(unlist(lapply(model_names_, get_color)), model_names_)
-line_types_ <- setNames(unlist(lapply(model_names_, get_line_style)), model_names_)
-markers_ <- setNames(unlist(lapply(model_names_, get_marker)), model_names_)
-labels_ <- lapply(model_names_, function(x) TeX(map_labels(x)))
-
+breaks <- config$model_reprs
+colors_ <- setNames(unlist(lapply(breaks, config$get_color)), breaks)
+line_types_ <- setNames(unlist(lapply(breaks, config$get_line_style)), breaks)
+markers_ <- setNames(unlist(lapply(breaks, config$get_marker)), breaks)
+labels_ <- sapply(breaks, function(x) TeX(config$get_label(x)))
 
 x_lab <- "Severity Difference"
 y_lab <- "Proportion of Significant P-values"
 
 
-# df <- df[df$scenario_factor > 0.1,]
 levels <- unique(df$scenario_factor)
-# levels.r <- round(levels, 1)
-# levels <- ifelse(levels == levels.r, levels.r, levels)
-
-#remove some levels for the plot axis and markers
-levels <- levels[!levels %in% c(0.4,0.6, 0.7, 0.9)]
-
 base_level <- "severity.RData"
+
+breaks <- config$model_reprs
+colors_ <- setNames(unlist(lapply(breaks, config$get_color)), breaks)
+line_types_ <- setNames(unlist(lapply(breaks, config$get_line_style)), breaks)
+markers_ <- setNames(unlist(lapply(breaks, config$get_marker)), breaks)
+labels_ <- sapply(breaks, function(x) TeX(config$get_label(x)))
 
 
 g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   geom_line(aes(color = model, linetype = model), size = 1.1) +
   geom_point(data= subset(df, scenario_factor %in% levels), aes(color = model, shape = model), size = 3, stroke = 2) +
-  scale_color_manual(values = colors_, labels = labels_, breaks = model_names_) +
-  scale_linetype_manual(values = line_types_, labels = labels_, breaks = model_names_) +
-  scale_shape_manual(values = markers_, labels = labels_, breaks = model_names_) +
+  scale_color_manual(values = colors_, labels = labels_, breaks = breaks) +
+  scale_linetype_manual(values = line_types_, labels = labels_, breaks = breaks) +
+  scale_shape_manual(values = markers_, labels = labels_, breaks = breaks) +
   labs(x = x_lab, y = y_lab, title = "") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5), legend.text = element_text(size = 15), legend.title = element_text(size = 0)) +
@@ -119,5 +102,4 @@ g <- g + theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
 store_name <- "more_severe_events.pdf"
 ggsave(store_name, plot = g, width = 15, height = 10)
 
-source("R/evaluation/long_df_to_table.R")
-print(long_df_to_table(df))
+# source("R/evaluation/long_df_to_table.R")

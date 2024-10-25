@@ -57,7 +57,7 @@ fit_model.zero_inflated_lognormal <- function(model , trial, sigma_per_group = m
   print("Running LRT test zero-inflated log-normal model")
 
   # LRT test fot the p_value
-  p_value <- LRT_test(trial, dist = "lnorm", fix_arg = TRUE)
+  p_value <- LRT_test(trial, dist = "lnorm", fix_arg = !sigma_per_group)
 
   # Define CDF functions for control and treatment groups
   get_CDFS <- function(x){
@@ -78,11 +78,6 @@ fit_model.zero_inflated_lognormal <- function(model , trial, sigma_per_group = m
                            sdlog = sdlog_control) * (1 - estimates$nu_control) + estimates$nu_control*(x>=0)
     treatment_CDFs <- plnorm(x, meanlog = meanlog_treatment,
                              sdlog = sdlog_treatment) * (1 - estimates$nu_treatment) + estimates$nu_treatment*(x>=0)
-
-    # control_CDFs <- plnorm(x, meanlog = log(estimates$mu_control),
-    #                        sdlog = sigma_control) * (1 - estimates$nu_control) + estimates$nu_control
-    # treatment_CDFs <- plnorm(x, meanlog = log(estimates$mu_treatment),
-    #                          sdlog = sigma_treatment) * (1 - estimates$nu_treatment) + estimates$nu_treatment
 
     return(list(control = control_CDFs, treatment = treatment_CDFs))
   }

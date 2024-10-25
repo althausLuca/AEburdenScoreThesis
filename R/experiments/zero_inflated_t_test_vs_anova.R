@@ -23,7 +23,7 @@ run_tests <- function(trial){
 
 result_df <- trial_data$apply_to_each(run_tests , as.df = TRUE)
 
-source("R/evaluation/analysis_and_comparison/p_value_plot.R")
+source("R/evaluation/plot_functions/p_value_plot.R")
 
 p_handler <- p_value_plot_handler()
 p_handler$add(unlist(result_df$anova), anova_model$name, "blue")
