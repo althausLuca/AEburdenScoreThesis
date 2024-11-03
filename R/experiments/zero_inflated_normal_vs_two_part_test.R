@@ -6,6 +6,7 @@ source("R/evaluation/plot_functions/p_value_plot.R")
 t_test <- TWO_PART_T_TEST()
 zi_model <- ZERO_INFLATED_NORMAL()
 
+
 fuc <- function(trial){
     lrt_p_value <- fit_model(zi_model, trial)$p_value
     two_part_test_p_value <- run_test(t_test, trial)$p_value

@@ -1,6 +1,20 @@
 
 run_test.permutation_test <- function(test, trial , n_permutations = test$parameters$n_permutations) {
-  return(mean_permutation_test(trial, n_permutations = n_permutations , return_permutations = F))
+  #result <- mean_permutation_test(trial, n_permutations = n_permutations , return_permutations = F)
+  #p_value <- result$p_value
+
+  # this yields the same p_value as the above commented code but is much faster
+  control_i <- trial$Group == "control"
+  treatment_i <- trial$Group == "treatment"
+
+  samples <- replicate(n_permutations, sample(trial$Score, length(trial$Score), replace = FALSE))
+
+  original_diff <- mean(trial$Score[treatment_i])-mean(trial$Score[control_i])
+  perm_diff <- colMeans(samples[treatment_i,])-colMeans(samples[control_i,])
+  p_value_fast <- 2*(min(sum( perm_diff >= original_diff)+1 , sum(perm_diff<=original_diff)+1)/(n_permutations+1))
+  p_value <- p_value_fast
+
+  return(create_test_result(test, p_value))
 }
 
 
@@ -90,4 +104,5 @@ mean_permutation_test <- function(trial, n_permutations = 10000, return_permutat
     p_value_g = p_value_g
   ))
 }
+
 

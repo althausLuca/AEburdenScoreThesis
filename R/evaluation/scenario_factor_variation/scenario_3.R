@@ -4,10 +4,12 @@ library(tidyr)
 library(latex2exp)
 
 source("R/models_and_tests/model_computer.R")
-source("R/evaluation/prop_of_p_values/functions.R")
+source("R/evaluation/scenario_factor_variation/functions.R")
+source("R/evaluation/config.R", local = (eval_config <- new.env()))
 
-model_folder <- "results_24_10/longer_event_durations"
-store_name <- "plots/longer_p_values.pdf"
+model_folder <- dirname(eval_config$DEFAULT_DURATION_VAR_FILE)
+plot_name <- eval_config$DURATION_VARIATION_PLOT_PATH
+
 
 df <- get_p_value_df(model_folder, factor_prefix = "_l_")
 
@@ -16,7 +18,7 @@ df <- df[order(df$scenario_factor, decreasing = FALSE),]
 
 base_level <- 1.0
 
-x_lab <- "Factor (Experimental/Control) for longer expected event durations"
+x_lab <- "Factor (Experimental/Control) for longer expected episode durations"
 y_lab <- "Proportion of Significant P-values"
 
 breaks <- config$model_reprs
@@ -40,9 +42,9 @@ g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   guides(fill = guide_legend(override.aes = list(size = 15))) +
   theme(legend.position = 'top') +
   geom_vline(xintercept = base_level, linetype = "dotted", color = "black") +
-  annotate("text", x = base_level+0.3, y = 0.92, label = "Equal expected \n even duration", angle = 0, color = "black", size = 5)+
+  annotate("text", x = base_level+0.3, y = 0.92, label = "Equal expected \n episode durations", angle = 0, color = "black", size = 5)+
   annotate("segment", x = 1.6, y = 0.03, xend = 2 + 7.5, yend = 0.03, arrow = arrow(type = "closed", length = unit(0.02, "npc"))) +
-  annotate("text", x = 3.5, y = 0.05, label = "Longer event durations in the experimental group", angle = 0, color = "black", size = 5)
+  annotate("text", x = 3.5, y = 0.05, label = "Longer episode durations in the experimental group", angle = 0, color = "black", size = 5)
   levels <- unique(df$scenario_factor)
   levels.r <- round(levels, 1)
   levels <- ifelse(levels == levels.r, levels.r,levels)
@@ -56,4 +58,4 @@ g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
 
   g <- g + scale_x_continuous(trans=transfromation , breaks = levels , labels = levels )
   g
-ggsave(store_name, plot = g, width = 15, height = 10)
+ggsave(plot_name, plot = g, width = 15, height = 10)

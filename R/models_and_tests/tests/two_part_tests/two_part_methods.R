@@ -56,13 +56,11 @@ get_T <- function(trial, test = "ttest") {
 
   if (test == "welch") {
     T <- t.test(control_scores.c, treatment_scores.c, alternative = "two.sided", var.equal = FALSE)$statistic
-  }
-  else if (test == "ttest") {
+  }else if (test == "ttest") {
     T <- t.test(control_scores.c, treatment_scores.c, alternative = "two.sided", var.equal = TRUE)$statistic
-  }
-     else if (test == "ks") {
+  }else if (test == "ks") {
     T <- ks.test(control_scores.c, treatment_scores.c, alternative = "two.sided")$statistic
-  } else if (test == "wilcoxon") {
+  }else if (test == "wilcoxon") {
     m_c <- n_control_c # first group
     n_c <- n_treatment_c
 

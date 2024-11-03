@@ -9,7 +9,6 @@ zero_model <- function(trial) {
   return(list(model = zero_model, estimates = list(nu_control = nu_control, nu_treatment = nu_treatment)))
 }
 
-
 fit_model.zero_inflated_normal <- function(model, trial, sigma_per_group = model$parameters$sigma_per_group) {
   trial <- check_data(trial)
 
@@ -30,59 +29,70 @@ fit_model.zero_inflated_normal <- function(model, trial, sigma_per_group = model
     estimates$sigma <- summary(lm(Score ~ Group, data = trial_c))$sigma
   }
 
-  get_CDFs <- function(x) {
-                #' Calculate the CDF of the zero-inflated normal distribution
-                #' x - the value/values at which to calculate the CDF
-                #' mu - the mean of the normal distribution of the non-zero values
-                #' sigma - the standard deviation of the normal distribution of the non-zero values
-                #' nu - the probability of obtaining a zero
-    get_CDF <- function(x, mu, sigma, nu) {
-      cdf <- nu * (x >= 0) + (1 - nu) * pnorm(x, mean = mu, sd = sigma)
-      return(cdf)
-    }
-
-    res <- with(estimates, {
-      treatment_CDF <- get_CDF(x, mu_treatment, ifelse(sigma_per_group, sigma_treatment, sigma), nu_treatment)
-      control_CDF <- get_CDF(x, mu_control, ifelse(sigma_per_group, sigma_control, sigma), nu_control)
-
-      return(list(control = control_CDF, treatment = treatment_CDF))
-    })
-
-    return(res)
-  }
-
 
   ll_func <- function(x, mu, sigma, nu) {
     sum(ifelse(x == 0, log(nu), log(1 - nu) + dnorm(x, mean = mu, sd = sigma, log = TRUE)))
   }
 
-  get_loglik <- function(full_trial = trial) {
-    with(estimates, {
-      ll <- ll_func(subset(full_trial$Score, full_trial$Group == "control"), mu_control,
-                    ifelse(sigma_per_group, sigma_control, sigma), nu_control) +
-        ll_func(subset(full_trial$Score, full_trial$Group == "treatment"), mu_treatment,
-                ifelse(sigma_per_group, sigma_control, sigma), nu_treatment)
-      return(ll)
-    })
-  }
+  sigma_control <- ifelse(sigma_per_group, estimates$sigma_control, estimates$sigma)
+  sigma_treatment <- ifelse(sigma_per_group, estimates$sigma_treatment, estimates$sigma)
 
+  ll <- ll_func(subset(trial$Score, trial$Group == "control"), estimates$mu_control, sigma_control, estimates$nu_control)
+  ll <- ll + ll_func(subset(trial$Score, trial$Group == "treatment"), estimates$mu_treatment, sigma_treatment, estimates$nu_treatment)
 
-  AIC <- -2 * get_loglik() + 2 * length(estimates)
-  p_value <- NULL
+  AIC <- -2 * ll + 2 * length(estimates)
+  p_value <- NULL #we dont use this in the model
 
-  # Extract treatment effect p_value
-  # if (!any(grepl("\\$get_CDFs", deparse(sys.calls())))) {
-  #   p_value <- LRT_test(trial, dist = "norm", fix_arg = T)
-  # } else { # skip computatio if not needed
-  #
-  # }
-
-  result <- list(
-    model = list(zero_model = zero_model),
-    estimates = estimates,
-    p_value = p_value,
-    std_err = sigma,
-    get_CDFs = get_CDFs,
-    AIC = AIC
+  metrics <- list(
+    AIC = AIC,
+    p_value = p_value
   )
+
+  result <- create_fitted_model_result(model, estimates, metrics)
 }
+#
+# head(model_computer$
+#        model_estimates$
+#        zero_inflated_normal_per_group)
+#
+# m_control <- max(unlist(sigma_c <- model_computer$
+#   model_estimates$
+#   zero_inflated_normal_per_group[, 5]))
+# m_treatment <- max(unlist(sigma_t <- model_computer$
+#   model_estimates$
+#   zero_inflated_normal_per_group[, 6]))
+#
+# head(model_computer$
+#        model_metrics$
+#        zero_inflated_normal_per_group)
+# aic_values <- model_computer$
+#   model_metrics$
+#   zero_inflated_normal_per_group[, 1]
+# m_aic <- max(unlist(aic_values))
+# i <- which(aic_values == m_aic)
+#
+# sigma_c[[i]]
+# sigma_t[[i]]
+#
+# model_computer$
+#   model_metrics$
+#   zero_inflated_normal_per_group[i, 1]
+# estimates <- model_computer$
+#   model_estimates$
+#   zero_inflated_normal_per_group[i,]
+# trial <- model_computer$trial_data$trials[[i]]
+#
+# ll_func <- function(x, mu, sigma, nu) {
+#   sum(ifelse(x == 0, log(nu), log(1 - nu) + dnorm(x, mean = mu, sd = sigma, log = TRUE)))
+# }
+#
+# x_control <- trial[trial$Group == "control",]$Score
+# x_treatment <- trial[trial$Group == "treatment",]$Score
+#
+# ll <- ll_func(x_control, estimates$mu_control, estimates$sigma_control, estimates$nu_control) +
+#   ll_func(x_treatment, estimates$mu_treatment, estimates$sigma_treatment, estimates$nu_treatment)
+# -2 * ll + 2 * length(estimates)
+#
+# fit_model(model_computer$
+#             models$
+#             zero_inflated_normal_per_group, trial)$metrics$AIC

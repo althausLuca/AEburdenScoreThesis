@@ -17,7 +17,7 @@ with(pattern_variation_config$shorter_gap_times, {
 
     simulate_trials_from_scenario(scenario, susceptibility_parameter = list("gamma", k),
                                   n_sim = N_SIM, death = FALSE, save = TRUE, file_name = filename
-                  ,result_path = data_result_path)
+                  ,result_path = TRIAL_DATA_PATH)
 
   }
 })

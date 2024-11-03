@@ -59,39 +59,16 @@ fit_model.zero_inflated_lognormal <- function(model , trial, sigma_per_group = m
   # LRT test fot the p_value
   p_value <- LRT_test(trial, dist = "lnorm", fix_arg = !sigma_per_group)
 
-  # Define CDF functions for control and treatment groups
-  get_CDFS <- function(x){
-
-    # meanlog <- log(fixef(TMB_model)$cond^2/(fixef(TMB_model)$cond^2 + sigma(TMB_model)^2)^0.5)
-    # sdlog <- log(1 + sigma(TMB_model)^2/(fixef(TMB_model)$cond^2))^0.5
-
-    sigma_control <- ifelse(sigma_per_group, estimates$sigma_control, estimates$sigma)
-    meanlog_control <- log(estimates$mu_control^2 / (estimates$mu_control^2 + sigma_control^2)^0.5)
-    sdlog_control <- log(1 + sigma_control^2 / estimates$mu_control^2)^0.5
-
-    sigma_treatment <- ifelse(sigma_per_group, estimates$sigma_treatment, estimates$sigma)
-    meanlog_treatment <- log(estimates$mu_treatment^2 / (estimates$mu_treatment^2 + sigma_treatment^2)^0.5)
-    sdlog_treatment <- log(1 + sigma_treatment^2 / estimates$mu_treatment^2)^0.5
-
-
-    control_CDFs <- plnorm(x, meanlog = meanlog_control,
-                           sdlog = sdlog_control) * (1 - estimates$nu_control) + estimates$nu_control*(x>=0)
-    treatment_CDFs <- plnorm(x, meanlog = meanlog_treatment,
-                             sdlog = sdlog_treatment) * (1 - estimates$nu_treatment) + estimates$nu_treatment*(x>=0)
-
-    return(list(control = control_CDFs, treatment = treatment_CDFs))
-  }
-
-  # Return the results as a list
-  result <- list(
-    model = TMB_model,
-    estimates = estimates,
-    mu_p_val = mu_p_value,
-    nu_p_val = nu_p_value,
-    p_value = p_value,
-    AIC = AIC,
-    get_CDFs = get_CDFS
+  metrics <- list(
+      AIC = AIC,
+      p_value = p_value
   )
+  misc <- list(
+    mu_p_value = mu_p_value,
+    nu_p_value = nu_p_value
+  )
+  # Return the results as a list
+  result <- create_fitted_model_result(model, estimates, metrics, misc = misc)
 
   return(result)
 }

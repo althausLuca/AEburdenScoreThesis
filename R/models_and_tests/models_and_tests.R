@@ -1,4 +1,6 @@
-# define models
+#'define models and tests and initalizes all the functions need from this directory
+#'only file that should be source outside of this folder
+
 ANOVA <- function() {
   model <- list()
   class(model) <- c("anova_model", "model")
@@ -102,3 +104,4 @@ ZERO_INFLATED_NORMAL <- function(sigma_per_group = FALSE) {
 }
 
 source("R/models_and_tests/init_models_and_tests.R")
+source("R/models_and_tests/model_computer.R")

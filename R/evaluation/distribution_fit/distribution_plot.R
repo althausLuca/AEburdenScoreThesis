@@ -2,6 +2,16 @@ library(ggplot2)
 library(grid)
 library(reshape2)
 
+#' @title distributions_plot
+#' @description Plot the distributions and the ECDF of the data
+#'
+#' @param distributions A matrix or a list of vectors containing the distributions to plot
+#' @param x The x values to plot the distributions at
+#' @param Y The data to plot the ECDF of
+#' @param distributions_title The title of the distributions
+#' @param ecdf_title The title of the ECDF
+#'
+#' @return A ggplot object
 distributions_plot <- function(distributions, x, Y ,  distributions_title = "Distributions", ecdf_title = "ECDF" , max_n_trials = Inf , text_size_factor = 1) {
   if(!is.matrix(distributions)){
     distribution_matrix <- do.call(cbind, distributions)
@@ -21,7 +31,9 @@ distributions_plot <- function(distributions, x, Y ,  distributions_title = "Dis
   distribution_df <- as.data.frame(distribution_matrix)
   colnames(distribution_df) <- paste("dist", 1:ncol(distribution_df), sep = "_")
   distribution_df$x <- x
-  melted_df <- melt(distribution_df, id.vars = "x")
+
+  melted_df <- reshape2::melt(distribution_df, id.vars = "x")
+
   colnames(melted_df) <- c("x", "trial", "value")
   melted_df$line_type <- "Distributions"
   ecdf_data <- data.frame(x = x, value = ecdf(Y)(x))

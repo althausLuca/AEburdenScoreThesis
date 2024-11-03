@@ -12,24 +12,9 @@ init_trial_data <- function(trials_list) {
     do.call(rbind, trial_data$trials)
   }
 
-  trial_data$apply_to_each <- function(func, as.df = FALSE, limit = NULL, use_parallel = FALSE, ...) {
-    apply_to_trials(trial_data, func, as.df = as.df, limit = limit, use_parallel = use_parallel, ...)
-  }
-
 
   class(trial_data) <- "trial_data"
   return(trial_data)
-
-  hist_and_box_plots <- function() {
-    source("R/trials/analysis/plots.R")
-    complete_df <- all_data()
-
-    # Create a histogram of the scores
-    hist(unlist(trial_data$trials$score), main = "Histogram of Scores", xlab = "Score", ...)
-    # Create a boxplot of the scores
-    boxplot(unlist(trial_data$trials$score), main = "Boxplot of Scores", ylab = "Score", ...)
-  }
-
 }
 
 
@@ -85,7 +70,8 @@ list.trial_data <- function(trial_data, ...) {
 }
 
 summary.trial_data <- function(trial_data, ...) {
-  print(paste0("Number of trials: ", trial_data$n_trials))
+  result <- list()
+  result$n_trials <- trial_data$n_trials
   all_data <- trial_data$all_data()
   control_scores <- all_data$Score[all_data$Group == "control"]
   treatment_scores <- all_data$Score[all_data$Group == "treatment"]
@@ -97,7 +83,8 @@ summary.trial_data <- function(trial_data, ...) {
 
   row.names(df) <- c("control", "treatment")
 
-  return(df)
+  result$summary <- df
+  return(result)
 }
 
 

@@ -21,23 +21,16 @@ fit_model.anova_model <- function(model, trial) {
   std_err <- summary$coefficients[2, 2]
 
   AIC <- AIC(anova_model)
+  p_value_lrt <- lmtest::lrtest(anova_model)[2,4]
 
-
-  get_CDFs <- function(x) {
-    treatment_CDF <- pnorm(x, mean = mu_treatment, sd = sigma)
-    control_CDF <- pnorm(x, mean = mu_control, sd = sigma)
-    return(list(control = treatment_CDF, treatment = control_CDF))
-  }
-
-  result <- list(
-    model = anova_model,
-    estimates = estimates,
+  metrics <- list(
     p_value = p_value,
-    p_value_lrt = lmtest::lrtest(anova_model)[2,4],
     std_err = std_err,
     AIC = AIC,
-    get_CDFs = get_CDFs
+    p_value_lrt = p_value_lrt
   )
+
+  result <- create_fitted_model_result(model, estimates, metrics)
 
   return(result)
 }

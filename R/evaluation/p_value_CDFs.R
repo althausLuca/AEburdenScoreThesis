@@ -23,9 +23,3 @@ names(model_computer$models)
 plot_name <- paste0(tools::file_path_sans_ext(basename(file)),".pdf")
 
 print(p_value_plot(model_computer,save=plot_name ,models_to_exclude = c("log_anova_c_10000", "tweedie_var_power_1.5_link_power_0","zero_inflated_ttest")))
-
-1162.279 - 675.8283
-1183.844 - 733.5812
-
-1162.279-1183.844
-675.8283-733.5812

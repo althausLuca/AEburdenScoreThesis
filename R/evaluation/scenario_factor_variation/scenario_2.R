@@ -2,13 +2,15 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(latex2exp)
-# source("R/run_models/default_models.R")
+
 source("R/models_and_tests/model_computer.R")
 source("R/helpers.R")
-source("R/evaluation/prop_of_p_values/functions.R")
+source("R/evaluation/scenario_factor_variation/functions.R")
+source("R/evaluation/config.R", local = (eval_config <- new.env()))
 
-model_folder <- "results_24_10/shorter_gap_times"
-store_name <- "plots/shorter_p_values.pdf"
+
+model_folder <- dirname(eval_config$DEFAULT_GAP_TIME_VAR_FILE)
+plot_name <- eval_config$GAP_TIME_VARIATION_PLOT_PATH
 
 df <- get_p_value_df(model_folder, factor_prefix = "_s_")
 
@@ -19,16 +21,7 @@ df <- df[order(df$scenario_factor, decreasing = FALSE),]
 base_level <- 1.0
 x_lab <- "Factor (Experimental/Control) for expected gap time between events"
 y_lab <- "Proportion of Significant P-values"
-
-model_names_ <- order_models(unique(df$model))
-
-colors_ <- setNames(unlist(lapply(model_names_, get_color)), model_names_)
-line_types_ <- setNames(unlist(lapply(model_names_, get_line_style)), model_names_)
-markers_ <- setNames(unlist(lapply(model_names_, get_marker)), model_names_)
-labels_ <- lapply(model_names_, function(x) TeX(map_labels(x)))
-named_labels <- setNames(labels_, model_names_)
-
-
+levels_to_exclude <- c(0.4, 0.6, 0.7, 0.9)
 
 transfromation <- scales::trans_new("log_reverse",
                                     transform = function(x) -log(x),
@@ -37,10 +30,11 @@ transfromation <- scales::trans_new("log_reverse",
 unique(df$scenario_factor)
 levels <- unique(df$scenario_factor)
 
-#remove some levels for the plot axis and markers
-levels <- levels[!levels %in% c(0.4, 0.6, 0.7, 0.9)]
-levels <- ifelse(levels == round(levels, 1), round(levels, 1) , levels)
 
+#remove some levels for the plot axis and markers
+levels <- levels[!levels %in% levels_to_exclude]
+# round the digits
+levels <- ifelse(levels == round(levels, 1), round(levels, 1) , levels)
 
 breaks <- config$model_reprs
 colors_ <- setNames(unlist(lapply(breaks, config$get_color)), breaks)
@@ -70,5 +64,5 @@ g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   scale_x_continuous(trans = transfromation, breaks = levels, labels = levels)
 g
 
-ggsave(store_name, plot = g, width = 15, height = 10)
+ggsave(plot_name, plot = g, width = 15, height = 10)
 

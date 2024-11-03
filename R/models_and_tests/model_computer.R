@@ -27,12 +27,14 @@ init_model_computer <- function(trial_data, name = "model_computer", path = "res
 
   result <- new.env()
   name <- name
-  path <- path
   class(result) <- "model_computer"
 
-  result$model_metrics <- list()
   result$trial_data <- trial_data
   result$models <- list()
+  result$model_metrics <- list()
+
+  result$model_estimates <- list()
+
   result$name <- name
   result$file_path <- file_path
 
@@ -57,33 +59,38 @@ load_model_computer <- function(file_path) {
   return(tmp$model_computer)
 }
 
-
 add_model <- function(model_computer, model_or_test, save = TRUE, recompute = FALSE) {
+
   if (isTRUE(model_or_test$force_computation)) {
     drop_model(model_computer, model_or_test$repr, save = FALSE)
   }
 
   print(paste0("Adding model: ", model_or_test$repr, ""))
 
-  if (!recompute & model_or_test$repr %in% names(model_computer$model_metrics)) {
+  if (!recompute & model_or_test$repr %in% names(model_computer$models)) {
     print(paste0("Model already exists: ", model_or_test$repr, ""))
     return()
   }
 
   if (inherits(model_or_test, "model")) {
     model_fits <- apply_to_trials(model_computer$trial_data, function(trial) fit_model(model_or_test, trial), use_parallel = FALSE)
-    model_restults <- data.table(t(sapply(model_fits, function(x) x$estimates)))
-    model_restults$p_value <- lapply(model_fits, function(fit) fit$p_value)
-    model_restults$AIC <- sapply(model_fits, function(fit) fit$AIC)
+
+    model_results <- data.table(t(sapply(model_fits, function(x) x$metrics)))
+    model_computer$model_metrics[[model_or_test$repr]] <- model_results
+
+    model_estimates <- lapply(model_fits, function(fit) fit$estimates)
+    model_computer$model_estimates[[model_or_test$repr]] <- do.call(rbind, model_estimates)
+
   } else if (inherits(model_or_test, "test")) {
     test_fits <- model_computer$trial_data$apply_to_each(function(trial) run_test(model_or_test, trial), use_parallel = FALSE)
     p_values <- sapply(test_fits, function(x) x$p_value)
-    model_restults <- data.table(p_value = p_values)
+    model_computer$model_metrics[[model_or_test$repr]] <- data.table(p_value = p_values)
   } else {
     stop("model_or_test must be a model or test object")
   }
-  model_computer$model_metrics[[model_or_test$repr]] <- model_restults
+
   model_computer$models[[model_or_test$repr]] <- model_or_test
+
   if (save) {
     save.model_computer(model_computer)
   }
@@ -99,17 +106,18 @@ add_model <- function(model_computer, model_or_test, save = TRUE, recompute = FA
 add_models <- function(model_computer, model_list, recompute = FALSE, skip_faulty = TRUE) {
   errors <- list()
   for (model in model_list) {
-    tryCatch({
+    if (skip_faulty) {
+      tryCatch({
+        add_model(model_computer, model, recompute = recompute)
+      }, error = function(e) {
+        # print to log file
+        print(model$repr)
+        print(e)
+        errors[[model$repr]] <<- e
+      })
+    }else {
       add_model(model_computer, model, recompute = recompute)
-    }, error = function(e) {
-      # print to log file
-      if (!skip_faulty) {
-        stop(e)
-      }
-      print(model$repr)
-      print(e)
-      errors[[model$repr]] <<- e
-    })
+    }
   }
   return(errors)
 }
@@ -119,21 +127,31 @@ drop_model <- function(model_computer, model_repr, save = FALSE) {
   model_exists <- model_repr %in% names(model_computer$model_metrics)
   model_computer$model_metrics[[model_repr]] <- NULL
   model_computer$models[[model_repr]] <- NULL
+  model_computer$model_estimates[[model_repr]] <- NULL
+
   if (save) {
     save.model_computer(model_computer)
   }
   return(model_exists)
 }
 
-#' @title get_value
-#' @description Get a value from the model metrics of the model computer
-#' @param model_computer A model_computer object
-#' @param val The value to get from the model metrics
-#' @return A data.table containing the values for each model where the value is defined
+
+
+
+    #' @title get_value
+    #' @description Get a value from the model metrics of the model computer
+    #' @param model_computer A model_computer object
+    #' @param val The value to get from the model metrics
+    #' @return A data.table containing the values for each model where the value is defined
 get_value <- function(model_computer, val = "p_value") {
   result <- NULL
   for (model in names(model_computer$models)) {
     if (val %in% names(model_computer$model_metrics[[model]])) {
+      if(is.null(unlist(model_computer$model_metrics[[model]][[val]]))){
+        warning(paste0("No value for ", val, " in model ", model))
+        next
+      }
+
       if (is.null(result)) {
         result <- data.table(model_computer$model_metrics[[model]][[val]])
         setnames(result, model)
@@ -145,44 +163,4 @@ get_value <- function(model_computer, val = "p_value") {
     }
   }
   return(result)
-}
-
-
-p_value_plot <- function(model_computer, save = NULL, models_to_exclude = NULL) {
-  source("R/evaluation/plot_functions/p_value_plot.R")
-
-  p_values <- get_value(model_computer, "p_value")
-  model_names <- names(p_values)
-
-  p_value_plot <- p_value_plot_handler()
-  for (name in model_names) {
-    if (!is.null(models_to_exclude) & name %in% models_to_exclude) {
-      next
-    }
-    p_value_plot$add(unlist(p_values[[name]]), name)
-  }
-
-  if (!is.null(save)) {
-    dir.create(dirname(save), recursive = TRUE, showWarnings = FALSE)
-    p_value_plot$save(save)
-  }
-
-  plot <- p_value_plot$plot()
-  return(plot)
-}
-
-
-p_value_cdf_table <- function(model_computer, values = c(0.05, 0.25, 0.5, 0.75)) {
-  source("R/models_and_tests/model_settings.R")
-  p_values <- get_value(model_computer, "p_value")
-  model_names <- names(p_values)
-
-  df <- data.frame(sapply(values, function(val) colMeans(p_values < val)))
-  df <- round(df, 3)
-  # set colnames
-  colnames(df) <- values
-  rownames(df) <- NULL
-  df <- cbind(model = 0, df)
-  df$model <- lapply(model_names, map_labels)
-  return(df)
 }

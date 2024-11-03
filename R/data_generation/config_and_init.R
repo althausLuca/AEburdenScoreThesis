@@ -7,9 +7,7 @@ k <- 1.5 # susceptibility parameter
 GAP_TIME_SHORT <- 750
 GAP_TIME_LONG <- 1500
 
-
-data_result_path <- "data/trials2/"
-
+TRIAL_DATA_PATH <- "data/"
 
 # scenario variation settings
 # names have to match with SCENARIO_PATTERNS in Scenarios.R
@@ -28,14 +26,14 @@ pattern_variation_config <- list(
     folder = "longer_event_durations/",
     longer_factors = c(10,5,3.5,2.5,1.25,1,1/1.25,1/2.5,1/3.5, 1/5,1/10)
     ),
-      "more_severe_events" = list(
+    "more_severe_events" = list(
     scenario_name = "s4",
     folder = "more_severe_events/",
     severity_factors = NULL # to be defined in the scenario
     )
 )
 
-dir.create(data_result_path , recursive = TRUE)
+dir.create(TRIAL_DATA_PATH , recursive = TRUE, showWarnings = FALSE)
 
 source("R/data_generation/Scenarios.R")
 source("R/trials/trial_simulation.R")

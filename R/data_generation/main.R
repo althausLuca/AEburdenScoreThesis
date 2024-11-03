@@ -7,5 +7,4 @@ source("R/data_generation/trial_size_variation/longer.R")
 source("R/data_generation/shorter_gap_times.R")
 source("R/data_generation/trial_size_variation/shorter.R")
 
-
 source("R/data_generation/more_severe_events.R")
