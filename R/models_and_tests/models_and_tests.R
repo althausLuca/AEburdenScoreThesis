@@ -104,4 +104,3 @@ ZERO_INFLATED_NORMAL <- function(sigma_per_group = FALSE) {
 }
 
 source("R/models_and_tests/init_models_and_tests.R")
-source("R/models_and_tests/model_computer.R")

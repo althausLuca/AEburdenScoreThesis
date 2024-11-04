@@ -6,7 +6,6 @@
 #' @param time_to_first_event Expected time until the first event (in days)
 #' @param event_duration Expected duration of each event (in days)
 #' @param time_between_events Expected time between events (in days )
-#' @param event_prob Probability of an event happening at all (0 to 1)
 #' @param severity_probabilities Probability distribution for event severity (vector of probabilities)
 #'
 #' @return An event object with defined parameters
@@ -16,11 +15,9 @@ AE <- function(event_duration,
                severity_weights = c(1, 2, 3),
                time_to_first_event = time_between_events) {
 
-
   event <- list(
     time_to_first_event = time_to_first_event,
     duration = event_duration,
-    time_between_events = time_between_events,
     gap_time = time_between_events,
     severity_weights = severity_weights,
     severity_probabilities = severity_probabilities
@@ -61,8 +58,8 @@ apply_susceptibility <- function(AE_type, susceptibility){
 
 sample_to_first_event <- function(AE_type) {
   check_AE(AE_type)
-  if (AE_type$time_to_first_event == Inf) { return(Inf) }
-  return(rexp(1, 1 / AE_type$time_to_first_event))
+  if (AE_type$gap_time == Inf) { return(Inf) }
+  return(rexp(1, 1 / AE_type$gap_time))
 }
 
 sample_event_duration <- function(AE_type, default_shape=9) {
@@ -78,6 +75,20 @@ sample_time_gap_time <- function(AE_type) {
 
 sample_severity <- function(AE_type) {
   return(sample(AE_type$severity_weights, 1, prob = AE_type$severity_probabilities))
+}
+
+
+change_AE_type_property <- function(AE_type, property, factor){
+  if(!is.null(AE_type[[property]])){
+    AE_type[[property]] <- AE_type[[property]] * factor
+    check_AE(AE_type)
+    return(AE_type)
+  }
+  #list of AE_types
+  if(!is.null(AE_type[[1]][[property]])){
+    return(lapply(AE_type, function(AE) { change_AE_type_property(AE, property, factor) }))
+  }
+  stop("Property not found")
 }
 
 

@@ -1,5 +1,5 @@
-source("R/trials/trial_loader.R")
-source("R/models_and_tests/model_computer.R")
+source("R/data_generation/trial_data.R")
+source("R/run_models/model_computer.R")
 source("R/run_models/config.R", local = (config <- new.env()))
 
 run_models <- function(trial_file_path, models = config$DEFAULT_MODELS, recompute = config$CLEAR_ALL) {
@@ -13,12 +13,10 @@ run_models <- function(trial_file_path, models = config$DEFAULT_MODELS, recomput
   print("storing results in:")
   print(result_path)
 
-  stop("stop here")
-
   result_folder <- dirname(result_path)
   model_computer_name <- basename(result_path)
 
-  trial_data <- get_trial_data(trial_file_path, result_path = "")
+  trial_data <- load.trial_data(trial_file_path)
   model_computer <- init_model_computer(trial_data, model_computer_name, result_folder, check_exists = !recompute)
   errors <- add_models(model_computer, models , skip_faulty= !config$HALT_ON_ERROR)
   print(errors)

@@ -10,7 +10,7 @@ check_data <- function(trial) {
   return(trial)
 }
 
-# we do not store the trials for each model and test again
+# we do not store the trials for each model and test again as they are stored in the model_computer object
 create_fitted_model_result <- function(model, estimates, metrics , ...) {
     results <- list(
         model = model,

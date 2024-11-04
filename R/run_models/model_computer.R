@@ -1,6 +1,6 @@
 library(data.table)
 
-source("R/trials/trial_data.R")
+source("R/data_generation/trial_data.R")
 
 #' @title model_computer
 #' @description A object to store and manage model results, allows adding model results to existing results form other models
@@ -20,8 +20,11 @@ init_model_computer <- function(trial_data, name = "model_computer", path = "res
   if (check_exists) {
     model_computer <- load_model_computer(file_path)
     if (!isFALSE(model_computer)) {
-      print(paste0("Loaded existing results from: ", file_path))
-      return(model_computer)
+      if(check_if_trial_data_is_equal(model_computer$trial_data, trial_data)){
+        print(paste0("Loaded existing results from: ", file_path))
+        return(model_computer)
+      }
+      print(paste0("Trial data is different ... reinitalizing model computer"))
     }
   }
 
@@ -73,7 +76,7 @@ add_model <- function(model_computer, model_or_test, save = TRUE, recompute = FA
   }
 
   if (inherits(model_or_test, "model")) {
-    model_fits <- apply_to_trials(model_computer$trial_data, function(trial) fit_model(model_or_test, trial), use_parallel = FALSE)
+    model_fits <- apply_to_trials(model_computer$trial_data, function(trial) fit_model(model_or_test, trial))
 
     model_results <- data.table(t(sapply(model_fits, function(x) x$metrics)))
     model_computer$model_metrics[[model_or_test$repr]] <- model_results
@@ -82,7 +85,7 @@ add_model <- function(model_computer, model_or_test, save = TRUE, recompute = FA
     model_computer$model_estimates[[model_or_test$repr]] <- do.call(rbind, model_estimates)
 
   } else if (inherits(model_or_test, "test")) {
-    test_fits <- model_computer$trial_data$apply_to_each(function(trial) run_test(model_or_test, trial), use_parallel = FALSE)
+    test_fits <- apply_to_trials(model_computer$trial_data, function(trial) run_test(model_or_test, trial))
     p_values <- sapply(test_fits, function(x) x$p_value)
     model_computer$model_metrics[[model_or_test$repr]] <- data.table(p_value = p_values)
   } else {

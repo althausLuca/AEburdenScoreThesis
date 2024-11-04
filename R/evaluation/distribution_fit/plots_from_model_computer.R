@@ -11,8 +11,8 @@ generate_CDF_plots <- function(model_computer, model_reps_to_plot = NULL,
   dir.create(plot_path , recursive = TRUE, showWarnings = FALSE)
 
   trial_data <- model_computer$trial_data
-  Y_control <- trial_data$all_data()[trial_data$all_data()$Group == "control", 1]
-  Y_treatment <- trial_data$all_data()[trial_data$all_data()$Group == "treatment", 1]
+  Y_control <- get_control_scores(trial_data)
+  Y_treatment <- get_treatment_scores(trial_data)
 
   models <- model_computer$models
   models_to_plot <- list() # create list of models to plot

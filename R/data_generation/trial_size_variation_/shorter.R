@@ -12,7 +12,7 @@ for (size in c(50, 30, 20)) {
 
   #generate new tiral data with smaller group sizes
   trial_data$trials <- lapply(trial_data$trials, function(trial) {
-    return(trial_sub_sampler(trial, group_size = size))
+    return(list(control=trial$control, treatment=trial$treatment))
   })
 
   save.trial_data(trial_data, file_path = file_path)

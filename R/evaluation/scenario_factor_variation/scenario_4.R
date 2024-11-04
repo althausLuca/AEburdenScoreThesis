@@ -1,8 +1,8 @@
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(latex2exp)
 
-source("R/models_and_tests/model_computer.R")
 source("R/evaluation/scenario_factor_variation/functions.R")
 source("R/evaluation/config.R", local = (eval_config <- new.env()))
 
@@ -13,12 +13,12 @@ severity_factor_names <- c("default" = "Equal settings",
                            "all_severe_experimental_all_mild_control" = "Experimental all sever \n Control all mild"
 )
 
-
+# plot_severity_variation()
 plot_severity_variation <- function(
   plot_settings = DEFAULT_MODEL_PLOT_SETTINGS,
   model_folder = paste0(eval_config$MODEL_DATA_PATH, "more_severe_events"),
   plot_name = eval_config$SEVERITY_INCREASE_PLOT_PATH,
-  x_lab = "Severity Difference",
+  x_lab =  "Severity Pattern",
   y_lab = "Proportion of Significant P-values"
 ) {
 

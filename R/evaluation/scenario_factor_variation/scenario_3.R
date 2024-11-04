@@ -3,12 +3,12 @@ library(dplyr)
 library(tidyr)
 library(latex2exp)
 
-source("R/models_and_tests/model_computer.R")
 source("R/evaluation/scenario_factor_variation/functions.R")
 source("R/evaluation/config.R", local = (eval_config <- new.env()))
 
 model_folder <- dirname(eval_config$DEFAULT_DURATION_VAR_FILE)
 plot_name <- eval_config$DURATION_VARIATION_PLOT_PATH
+model_settings <- get_plot_specs(DEFAULT_MODEL_PLOT_SETTINGS)
 
 
 df <- get_p_value_df(model_folder, factor_prefix = "_l_")
@@ -21,11 +21,11 @@ base_level <- 1.0
 x_lab <- "Factor (Experimental/Control) for longer expected episode durations"
 y_lab <- "Proportion of Significant P-values"
 
-breaks <- config$model_reprs
-colors_ <- setNames(unlist(lapply(breaks, config$get_color)), breaks)
-line_types_ <- setNames(unlist(lapply(breaks, config$get_line_style)), breaks)
-markers_ <- setNames(unlist(lapply(breaks, config$get_marker)), breaks)
-labels_ <- sapply(breaks, function(x) TeX(config$get_label(x)))
+colors_ <- model_settings$colors
+line_types_ <- model_settings$line_styles
+markers_ <- model_settings$markers
+labels_ <- model_settings$TeX_labels
+breaks <- names(colors_)
 
 g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +
   geom_line(aes(color = model, linetype = model), size = 1.1) +

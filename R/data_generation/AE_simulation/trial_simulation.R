@@ -1,4 +1,4 @@
-source("R/AdverseEvents/event_simulation.R")
+source("R/data_generation/AE_simulation/event_simulation.R")
 
 #' Simulate a trial group with a given set of AEs and specified susceptibility parameters
 #' @param AEs A list of Adverse Events to simulate
@@ -22,7 +22,6 @@ simulate_group <- function(AEs, size = 100, susceptibility_parameter = list("gam
     theta <- susceptibility_parameter[[2]]
     susceptibility <- 1 / rgamma(size, shape = theta, scale = 1 / theta)
   }
-
 
   results <- matrix(nrow = size, ncol = 2) # Preallocate a matrix for scores and n_events
   colnames(results) <- c("Score", "N_Events")

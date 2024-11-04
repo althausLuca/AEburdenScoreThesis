@@ -3,7 +3,6 @@ library(dplyr)
 library(tidyr)
 library(latex2exp)
 
-source("R/models_and_tests/model_computer.R")
 source("R/helpers.R")
 source("R/evaluation/scenario_factor_variation/functions.R")
 source("R/evaluation/config.R", local = (eval_config <- new.env()))
@@ -17,9 +16,9 @@ df <- get_p_value_df(model_folder, factor_prefix = "_s_")
 df$scenario_factor <- as.numeric(df$scenario_factor)
 df <- df[order(df$scenario_factor, decreasing = FALSE),]
 
-
+model_settings <- get_plot_specs(DEFAULT_MODEL_PLOT_SETTINGS)
 base_level <- 1.0
-x_lab <- "Factor (Experimental/Control) for expected gap time between events"
+x_lab <- "Factor (Experimental/Control) for expected gap time between event episodes"
 y_lab <- "Proportion of Significant P-values"
 levels_to_exclude <- c(0.4, 0.6, 0.7, 0.9)
 
@@ -36,11 +35,12 @@ levels <- levels[!levels %in% levels_to_exclude]
 # round the digits
 levels <- ifelse(levels == round(levels, 1), round(levels, 1) , levels)
 
-breaks <- config$model_reprs
-colors_ <- setNames(unlist(lapply(breaks, config$get_color)), breaks)
-line_types_ <- setNames(unlist(lapply(breaks, config$get_line_style)), breaks)
-markers_ <- setNames(unlist(lapply(breaks, config$get_marker)), breaks)
-labels_ <- sapply(breaks, function(x) TeX(config$get_label(x)))
+colors_ <- model_settings$colors
+line_types_ <- model_settings$line_styles
+markers_ <- model_settings$markers
+labels_ <- model_settings$TeX_labels
+breaks <- names(colors_)
+
 
 #, breaks = model_names_
 g <- ggplot(df, aes(x = scenario_factor, y = value, group = model)) +

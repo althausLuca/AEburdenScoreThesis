@@ -1,6 +1,6 @@
 # file containing the functions to simulate adverse events up to a single list of events
 # source("R/AdverseEvents/death_case_computations.R")
-source("R/AdverseEvents/AdverseEvent.R")
+source("R/data_generation/AE_simulation/AdverseEvent.R")
 
 #' Simulate a single event
 #'

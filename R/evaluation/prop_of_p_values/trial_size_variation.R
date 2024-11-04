@@ -1,7 +1,5 @@
-source("R/models_and_tests/model_computer.R")
 source("R/evaluation/config.R", local = (eval_config <- new.env()))
-source("R/evaluation/prop_of_p_values/p_value_plot.R")
-
+source("R/evaluation/prop_of_p_values/p_value_cdf_plot.R")
 #top level folder
 
 
@@ -13,11 +11,10 @@ for(file in files) {
   result_name <- paste0(eval_config$PLOT_PATH, basename(folder) ,
                         "/", tools::file_path_sans_ext(basename(file)),".pdf")
 
-  LEGEND_ON_TOP <<- grepl("equal" , file) || grepl("s1" , file)
+  dir.create(dirname(result_name), recursive = TRUE , showWarnings = FALSE)
+
+  legend_top_left <- grepl("equal" , file) || grepl("s1" , file)
 
   model_computer <- load_model_computer(file)
-  p_values <- get_value(model_computer, "p_value")
-  p <- p_value_plot(p_values , save =result_name,
-                    models_to_include = eval_config$model_reprs)
+  p_value_plot(model_computer, save = result_name , legend_top_left = legend_top_left)
 }
-print(p)

@@ -21,7 +21,7 @@ DEFAULT_MODEL_PLOT_SETTINGS <- list(
 
 brown_palette <- c("#8B4513", "#A0522D", "#D2691E", "#DEB887", "#CD853F", "#F4A460")
 # define QR modle faur tau in 0.05, 0.1,  0.25, 0.5, 0.75, 0.9 0.95
-QR_MODEL_PLOT_SETTINGS <<- list(
+QR_MODEL_PLOT_SETTINGS <- list(
   list(QUANTILE_REGRESSION(tau = 0.05), "Quantile Regression $$$_{\\tau=0.05}$", brown_palette[1], "dashed", 2),
   list(QUANTILE_REGRESSION(tau = 0.1), "Quantile Regression $$$_{\\tau=0.1}$", brown_palette[2], "dotdash", 4),
   list(QUANTILE_REGRESSION(tau = 0.25), "Quantile Regression $$$_{\\tau=0.25}$", brown_palette[3], "1F", 5),
@@ -50,43 +50,3 @@ get_plot_specs <- function(settings = default_model_plot_settings) {
 
   return(result)
 }
-
-#
-# get_label <- function(model_repr) {
-#   model_index <- which(model_reprs == model_repr)
-#   if (length(model_index) == 0) {
-#     print(paste0("Model ", model_repr, " not found"))
-#     return(model_repr)
-#   }
-#   return(model_labels[model_index])
-# }
-#
-# get_color <- function(model_repr) {
-#   model_index <- which(model_reprs == model_repr)
-#   if (length(model_index) == 0) {
-#     print(paste0("Model ", model_repr, " not found"))
-#     return("black")
-#   }
-#   return(model_colors[model_index])
-# }
-#
-# get_line_style <- function(model_repr) {
-#   model_index <- which(model_reprs == model_repr)
-#   if (length(model_index) == 0) {
-#     print(paste0("Model ", model_repr, " not found"))
-#     return("solid")
-#   }
-#   return(model_line_styles[model_index])
-# }
-#
-# get_marker <- function(model_repr) {
-#   model_index <- which(model_reprs == model_repr)
-#   if (length(model_index) == 0) {
-#     print(paste0("Model ", model_repr, " not found"))
-#     return(1)
-#   }
-#   return(model_markers[model_index])
-# }
-
-
-

@@ -1,4 +1,4 @@
-source("R/data_generation/identical_settings.R")
+source("initialize_files.R")
 source("R/data_generation/trial_size_variation/equal.R")
 
 source("R/data_generation/longer_event_durations.R")
