@@ -5,6 +5,15 @@ source("R/data_generation/AE_types.R")
 source("R/data_generation/AE_simulation/event_simulation.R")
 
 
+#' Simulate a AE Type event n times
+#' This function simulates an event based on the provided event parameters.
+#' @param AE_type
+#' @param max_time Maximum time to simulate events (in days)
+#' @param n Number of events to simulate
+#' @param k_d Shape parameter for the event duration distribution
+#' @param k_s (inverse) Shape parameter for the susceptibility distribution
+#' @param susceptibility A vector of susceptibility values for the group (default = 1 / rgamma(n, shape = k_s, scale = 1 / k_s))
+#' @return A data frame with columns score, n_events and duration
 simulate_event <- function(AE_type,
                            max_time = 180,
                            n = 1,
@@ -24,7 +33,7 @@ simulate_event <- function(AE_type,
   while (length(i) > 0) {
     result$t[i] <- result$t[i] + sample_time_gap_time(AE_type, s = c(s[i]))
     i <- which(result$t < max_time)
-    if (length(i) == 0) { break }
+    if (length(i) == 0) { break } # break if no more events can be simulated (faster and avoids warnings)
     result$n_events[i] <- result$n_events[i] + 1
     event_duration <-  sample_event_duration(AE_type, n = length(i), shape = k_d)
     event_duration <- ifelse(event_duration < (max_time - result$t[i]), event_duration, max_time - result$t[i])
