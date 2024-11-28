@@ -1,17 +1,29 @@
 source("R/evaluation/config.R", local = (config <- new.env()))
 
-
-
-
 source("R/evaluation/scenario_factor_variation/scenario_2.R")
 source("R/evaluation/scenario_factor_variation/scenario_3.R")
-source("R/evaluation/prop_of_p_values/trial_size_variation.R")
 
+## standard models
+plot_duration_variation()
+plot_gap_time_variation()
+
+## QR models
+plot_duration_variation(plot_settings = QR_MODEL_PLOT_SETTINGS,
+                        plot_name = paste0(tools::file_path_sans_ext(config$DURATION_VARIATION_PLOT_PATH), "_qr.pdf"),
+                        omit_arrow = TRUE
+)
+
+plot_gap_time_variation(plot_settings = QR_MODEL_PLOT_SETTINGS,
+                        plot_name = paste0(tools::file_path_sans_ext(config$GAP_TIME_VARIATION_PLOT_PATH), "_qr.pdf"),
+                        omit_arrow = TRUE
+)
+
+## sample size variation
+source("R/evaluation/prop_of_p_values/trial_size_variation.R")
 
 
 files_for_cdfs <- c(config$DEFAULT_GAP_TIME_VAR_FILE,
                     config$DEFAULT_DURATION_VAR_FILE)
-
 
 
 #generate CDF plots for each model
@@ -31,3 +43,5 @@ for (file in files_for_cdfs) {
 
 source("R/evaluation/scenario_factor_variation/scenario_4.R")
 plot_severity_variation()
+
+

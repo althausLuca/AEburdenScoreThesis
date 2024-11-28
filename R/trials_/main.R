@@ -166,3 +166,5 @@
 # source("R/trials/trial_analysis.R")
 # hist_plot(group_values$score,zero_count = TRUE , mean = TRUE)
 # hist_plot(group_values$susceptibility,zero_count = TRUE , mean = TRUE)
+source("R/data_generation/config_and_init.R")
+data <- load_shorter_trials()

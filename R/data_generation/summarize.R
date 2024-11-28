@@ -1,5 +1,8 @@
+#' Summarize all trials from the TRIAL_DATA_PATH currently set in the config_and_init.R file.
+#' Results are stored in trial_summary.txt and show  wheterver the data is computed and
+#' if so, the summary of the trials containing mean, sd, median and zero values per treatment group
+
 source("R/data_generation/config_and_init.R")
-source("R/data_generation/trial_data.R")
 path <- TRIAL_DATA_PATH
 
 result_path <- "trial_summary.txt"

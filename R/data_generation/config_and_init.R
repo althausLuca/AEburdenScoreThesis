@@ -19,12 +19,12 @@ pattern_variation_config <- list(
   "shorter_gap_times" = list(
     scenario_name = "s2",
     folder = "shorter_gap_times/",
-    shorter_factors = c(1 / 10, 1 / 5, 1 / 2.5, 1 / 2, 1 / 1.25, 1, 1.25, 2, 2.5, 5, 10)
+    shorter_factors = c(1/10, 1/7 , 1/5, 1/3.5, 1/2.5, 1/2,1/1.5, 1/1.25, 1, 1.25, 1.5, 2, 2.5, 3.5,5,7, 10)
   ),
   "longer_event_durations" = list(
     scenario_name = "s3",
     folder = "longer_event_durations/",
-    longer_factors = c(10, 5, 3.5, 2.5, 1.25, 1, 1 / 1.25, 1 / 2.5, 1 / 3.5, 1 / 5, 1 / 10)
+    longer_factors = c(10,7, 5, 3.5, 2.5, 1.5, 1.25, 1, 1 / 1.25, 1/1.5, 1 / 2.5, 1 / 3.5, 1/7, 1 / 5, 1 / 10)
   ),
   "more_severe_events" = list(
     scenario_name = "s4",
@@ -35,10 +35,10 @@ pattern_variation_config <- list(
 
 trial_size_variation_config <- list(
   folder = "sample_size_variation/",
-  sizes = c(100, 50, 30 , 20),
+  sizes = c(100, 50, 30, 20),
   patterns = list(equal = list(factor = NULL),
-                   gap_time = list(factor = 0.5),
-                   duration = list(factor = 3.5)
+                  gap_time = list(factor = 0.5),
+                  duration = list(factor = 3.5)
   )
 )
 
@@ -48,3 +48,4 @@ dir.create(TRIAL_DATA_PATH, recursive = TRUE, showWarnings = FALSE)
 # source("R/data_generation/Scenarios.R")
 source("R/data_generation/AE_types.R")
 source("R/data_generation/trial_data.R")
+

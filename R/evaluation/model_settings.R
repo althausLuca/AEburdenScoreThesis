@@ -36,7 +36,7 @@ QR_MODEL_PLOT_SETTINGS <- list(
 #' @param model_reprs The model representations
 #' @param settings The settings for the models
 #' @return A list with the latex labels, colors, line styles and markers
-get_plot_specs <- function(settings = default_model_plot_settings) {
+get_plot_specs <- function(settings = DEFAULT_MODEL_PLOT_SETTINGS) {
   result <- list()
 
   repr <- sapply(settings, function(x) x[[1]]$repr)

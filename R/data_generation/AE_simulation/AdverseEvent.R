@@ -1,4 +1,4 @@
-#' Define an Adverse Event
+#' Define an Adverse Event (Type)
 #'
 #' This function defines an event with parameters such as time to the first event,
 #' event duration, time between events, event probability, and severity probabilities.
@@ -29,7 +29,7 @@ AE <- function(event_duration,
 }
 
 
-check_AE <- function(AE_type){
+check_AE <- function(AE_type) {
   with(AE_type, {
     stopifnot(time_to_first_event > 0)
     stopifnot(duration > 0)
@@ -41,12 +41,12 @@ check_AE <- function(AE_type){
 }
 
 
-apply_susceptibility <- function(AE_type, susceptibility){
+apply_susceptibility <- function(AE_type, susceptibility) {
   stopifnot(is.null(AE_type$susceptibility))
   check_AE(AE_type)
 
-  AE_type$time_to_first_event <-   AE_type$time_to_first_event/susceptibility
-  AE_type$gap_time <- AE_type$gap_time/susceptibility
+  AE_type$time_to_first_event <- AE_type$time_to_first_event / susceptibility
+  AE_type$gap_time <- AE_type$gap_time / susceptibility
   AE_type$susceptibility <- susceptibility
 
   check_AE(AE_type)
@@ -56,36 +56,35 @@ apply_susceptibility <- function(AE_type, susceptibility){
 
 ##sampling methods for an adverse event
 
-sample_to_first_event <- function(AE_type) {
+sample_to_first_event <- function(AE_type, n = 1) {
   check_AE(AE_type)
   if (AE_type$gap_time == Inf) { return(Inf) }
-  return(rexp(1, 1 / AE_type$gap_time))
+  return(rexp(n, 1 / AE_type$gap_time))
 }
 
-sample_event_duration <- function(AE_type, default_shape=9) {
+sample_event_duration <- function(AE_type, shape = 9, n = 1) {
   if (AE_type$duration == Inf) { return(Inf) }
-  shape <- ifelse(exists("duartion_shape_"), duartion_shape_, default_shape)
-  return(rgamma(1,shape=shape, scale=AE_type$duration/shape) )
+  return(rgamma(n, shape = shape, scale = AE_type$duration / shape))
 }
 
-sample_time_gap_time <- function(AE_type) {
+sample_time_gap_time <- function(AE_type, n=1 , s = rep(1, n)) {
   if (AE_type$gap_time == Inf) { return(Inf) }
-  return(rexp(1, 1 / AE_type$gap_time))
+  return(rexp(length(s), s / AE_type$gap_time))
 }
 
-sample_severity <- function(AE_type) {
-  return(sample(AE_type$severity_weights, 1, prob = AE_type$severity_probabilities))
+sample_severity <- function(AE_type, n = 1) {
+  return(sample(AE_type$severity_weights, size = n, prob = AE_type$severity_probabilities, replace = TRUE))
 }
 
 
-change_AE_type_property <- function(AE_type, property, factor){
-  if(!is.null(AE_type[[property]])){
+change_AE_type_property <- function(AE_type, property, factor) {
+  if (!is.null(AE_type[[property]])) {
     AE_type[[property]] <- AE_type[[property]] * factor
     check_AE(AE_type)
     return(AE_type)
   }
   #list of AE_types
-  if(!is.null(AE_type[[1]][[property]])){
+  if (!is.null(AE_type[[1]][[property]])) {
     return(lapply(AE_type, function(AE) { change_AE_type_property(AE, property, factor) }))
   }
   stop("Property not found")

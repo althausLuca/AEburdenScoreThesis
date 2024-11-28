@@ -3,12 +3,9 @@ source("R/run_models/config.R", local = (run_config <- new.env()))
 source("R/evaluation/model_settings.R")
 
 # default should be the same as in run_models/config.R  (run_config$MODEL_RESULT_PATH)
-MODEL_DATA_PATH <- run_config$MODEL_RESULT_PATH
+# MODEL_DATA_PATH <- paste0(run_config$MODEL_RESULT_PATH)
 MODEL_DATA_PATH <- "results/"
-
-PLOT_PATH <- "plots/method_evaluation/QR/"
-DEFAULT_MODEL_PLOT_SETTINGS <<- QR_MODEL_PLOT_SETTINGS
-
+PLOT_PATH <- paste0("plots/method_evaluation/", gsub("results/", "", MODEL_DATA_PATH))
 
 #scenario_factor_variation default files
 DEFAULT_DURATION_VAR_FILE <- paste0(MODEL_DATA_PATH, "longer_event_durations/s3_l_3.5.RData")
@@ -33,3 +30,9 @@ if (!file.exists(EQUAL_SETTIGS_FILE)) {
 }
 
 dir.create(PLOT_PATH, recursive = TRUE , showWarnings = FALSE)
+
+
+#' Loading function for quick acces to selected trial data objects
+load_shorter_trials <- function() load_model_computer(DEFAULT_GAP_TIME_VAR_FILE)$trial_data
+load_longer_trials <- function() load_model_computer(DEFAULT_DURATION_VAR_FILE)$trial_data
+load_equal_trials <- function() load_model_computer(EQUAL_SETTIGS_FILE)$trial_data

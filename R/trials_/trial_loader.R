@@ -45,7 +45,6 @@ get_lines <- function(i, trial_data) {
 #' @seealso \code{\link{simulate_scenario}} for simulating a scenario
 #' @seealso \code{\link{simulate_scores_from_scenario}} for simulating a scenario
 get_trial_data <- function(file_name , result_path = "data/trials/") {
-
   # check if it is not a string
   file_path <- get_file_path(file_name ,result_path =  result_path)
 

@@ -1,5 +1,6 @@
 source("R/data_generation/AE_simulation/trial_simulation.R")
 
+
 init_trial_data <- function(
   control_AE_types,
   treatment_AE_types,
@@ -95,6 +96,10 @@ get_treatment_scores <- function(trial_data) {
 }
 
 summary.trial_data <- function(trial_data) {
+  if(length(trial_data$trials) < 1){
+    return("No trials to summarize")
+  }
+
   control_scores <- get_control_scores(trial_data)
   treatment_scores <- get_treatment_scores(trial_data)
 

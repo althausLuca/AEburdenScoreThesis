@@ -9,7 +9,7 @@ source("R/data_generation/config_and_init.R", local = (dg_config <- new.env()))
 CLEAR_ALL <- FALSE # recompute everything
 HALT_ON_ERROR <- TRUE #  stop or compute what works
 
-TRIAL_DATA_PATH <-  Sys.getenv("TRIAL_FOLDER", unset = "data/trials/")
+TRIAL_DATA_PATH <-  Sys.getenv("TRIAL_FOLDER", unset = "data/")
 MODEL_RESULT_PATH <- Sys.getenv("RESULT_FOLDER", unset = "results/")
 
 DEFAULT_MODELS <- list(
@@ -24,7 +24,7 @@ DEFAULT_MODELS <- list(
   TWEEDIE_REGRESSION(xi = "infer", use_mle = T),
   TWEEDIE_REGRESSION(xi = 1.2, use_mle = T),
   TWEEDIE_REGRESSION(xi = 1.8, use_mle = T),
-  QUANTILE_REGRESSION(),
+  force_computation(QUANTILE_REGRESSION()),
   QUANTILE_REGRESSION(tau = 0.75),
   WILCOXON_TEST(),
   PERMUTATION_TEST(),
@@ -33,11 +33,11 @@ DEFAULT_MODELS <- list(
   TWO_PART_T_TEST(),
   TWO_PART_WILCOXON_TEST(),
   TWO_PART_T_TEST(use_welch = TRUE),
-  ZERO_INFLATED_LOGNORMAL(sigma_per_group = TRUE),
-  ZERO_INFLATED_GAMMA(sigma_per_group = TRUE),
   QUANTILE_REGRESSION(tau = 0.05),
   QUANTILE_REGRESSION(tau = 0.1),
   QUANTILE_REGRESSION(tau = 0.25),
   QUANTILE_REGRESSION(tau = 0.9),
-  QUANTILE_REGRESSION(tau = 0.95)
+  QUANTILE_REGRESSION(tau = 0.95),
+  ZERO_INFLATED_LOGNORMAL(sigma_per_group = TRUE),
+  ZERO_INFLATED_GAMMA(sigma_per_group = TRUE) #may fail if only zeros in one group
 )

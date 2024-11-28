@@ -6,7 +6,7 @@ library(statmod)
 #' @param trial trial data
 #' @param link_power link power for the tweedie model
 #' @param xi power parameter for the tweedie model
-#' @param use_mle use mle for the dispersion parameter
+#' @param use_mle use mle for the dispersion parameter (default is FALSE)
 #' @return fitted model result
 fit_model.tweedie_glm_model <- function(model, trial,
                                         link_power = model$parameters$link_power,

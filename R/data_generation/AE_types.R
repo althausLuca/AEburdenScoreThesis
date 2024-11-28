@@ -1,6 +1,6 @@
 source("R/data_generation/AE_simulation/AdverseEvent.R")
 
-# Severity descriptions
+# Severity weights
 MOSTLY_MILD <- c(0.6, 0.3, 0.1)
 MOSTLY_MODERATE <- c(0.3, 0.6, 0.1)
 MOSTLY_SEVERE <- c(0.2, 0.3, 0.5)
