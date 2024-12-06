@@ -1,3 +1,4 @@
+#log problem when running models to logs folder
 
 init_logger <- function(trial_name="") {
   date <- Sys.Date()

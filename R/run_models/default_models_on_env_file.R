@@ -9,9 +9,6 @@ if (FALSE) { # for testing
   trial_data <- load.trial_data(file_path)
   trial_as_df(trial_data$trials[[1]])
   load_model_computer(file_path)
-  # p_values <- get_value(m,"p_value")
-  # p_values$tweedie_var_power_1.2_link_power_0
-  # p_values$tweedie_var_power_1.2_link_power_0_mle
 }
 
 

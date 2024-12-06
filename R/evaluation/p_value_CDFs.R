@@ -9,14 +9,14 @@ scenario <- "shorter"
 
 model_computer <- load_model_computer(file)
 
-AIC_Values <- get_value(model_computer , "AIC")
-mean_AIC <- colMeans(AIC_Values)
-sd_AIC <- apply(AIC_Values, 2, sd)
-
-aic_df <- data.frame(
-  Mean_AIC = mean_AIC,
-  SD_AIC = sd_AIC
-)
+# AIC_Values <- get_value(model_computer , "AIC")
+# mean_AIC <- colMeans(AIC_Values)
+# sd_AIC <- apply(AIC_Values, 2, sd)
+#
+# aic_df <- data.frame(
+#   Mean_AIC = mean_AIC,
+#   SD_AIC = sd_AIC
+# )
 
 names(model_computer$models)
 
