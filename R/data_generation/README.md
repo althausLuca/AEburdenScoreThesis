@@ -1,6 +1,7 @@
 ## Data Generation
 
 The code for the simulation of AE burden scores is located in the `R/data_generation/AE_simulation` directory. 
+
 Below is a description of the main files and their purposes:
 
 - **`AE_types.R`**: Defines the default base-case AE types used in the simulations.
