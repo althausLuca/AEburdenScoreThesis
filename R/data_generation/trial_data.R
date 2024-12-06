@@ -103,12 +103,12 @@ summary.trial_data <- function(trial_data) {
   control_scores <- get_control_scores(trial_data)
   treatment_scores <- get_treatment_scores(trial_data)
 
-  df <- data.frame(mean = c(mean(control_scores), mean(treatment_scores)),
-                   sd = c(sd(control_scores), sd(treatment_scores)),
-                   median = c(median(control_scores), median(treatment_scores)),
-                   zero = c(mean(control_scores == 0), mean(treatment_scores == 0)))
+  df <- data.frame(group= c("control", "treatment"),
+                     mean = round(c(mean(control_scores), mean(treatment_scores)),2),
+                   sd = round(c(sd(control_scores), sd(treatment_scores)),3),
+                   median =  round(c(median(control_scores), median(treatment_scores)),2),
+                   zero_prop =  round(c(mean(control_scores == 0), mean(treatment_scores == 0)),2))
 
-  row.names(df) <- c("control", "treatment")
 
   return(df)
 }

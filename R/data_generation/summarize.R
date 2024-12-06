@@ -17,8 +17,10 @@ for(file in trial_files){
   trial_data <- load.trial_data(file)
   s <- summary.trial_data(trial_data)
   cat(paste0(file, "\n"), file = result_path , append = TRUE)
-  cat(paste0(s), file = result_path, append = TRUE)
-  cat(paste0("\n", trial_data$n_trials,"\n"), file = result_path, append = TRUE)
+  suppressWarnings(
+  write.table(s, file = result_path, append = TRUE,row.names = FALSE)
+  )
+  cat(paste0("Trial:", trial_data$n_trials,"\n"), file = result_path, append = TRUE)
   cat("\n", file = result_path, append = TRUE)
 }
 

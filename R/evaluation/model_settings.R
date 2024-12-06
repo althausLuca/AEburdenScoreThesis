@@ -1,7 +1,9 @@
-# models to plot for p_value plots, the order matters
+# Settings for the plotting of the models
+
 library(latex2exp)
 
-#model, latex compatible label, color, line_style, marker
+# format: model, latex compatible label, color, line_style, marker
+# The order here is important, as it is used in the plots
 DEFAULT_MODEL_PLOT_SETTINGS <- list(
   list(WILCOXON_TEST(), "Wilcoxon Test", "darkgreen", "dashed", 6),
   list(PERMUTATION_TEST(), "Permutation Test", "yellow3", "dotted", 5),
