@@ -25,8 +25,8 @@ All the scripts are located in the `R` folder, with subdirectories for:
 
 ### Other Directories
 - **`data`**: Contains simulated AE burden score data.
-- **`results`** **: Storing the output from model/test runs.
-- **`plots` **: Directory for storing figures and visualizations from the evluation.
+- **`results`**: Storing the output from model/test runs.
+- **`plots`**: Directory for storing figures and visualizations from the evluation.
 
 ### Setup
 The file 'setup.R' loads the necessary packages to run the scripts. 
