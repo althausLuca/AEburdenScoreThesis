@@ -1,3 +1,5 @@
+# Execute this script to generate all plots for the simulation study section.
+
 source("R/evaluation/config.R", local = (config <- new.env()))
 
 source("R/evaluation/scenario_factor_variation/scenario_2.R")
