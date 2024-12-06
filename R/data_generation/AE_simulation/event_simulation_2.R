@@ -13,7 +13,8 @@ source("R/data_generation/AE_simulation/event_simulation.R")
 #' @param k_d Shape parameter for the event duration distribution
 #' @param k_s (inverse) Shape parameter for the susceptibility distribution
 #' @param susceptibility A vector of susceptibility values for the group (default = 1 / rgamma(n, shape = k_s, scale = 1 / k_s))
-#' @return A data frame with columns score, n_events and duration
+#' @return A data frame with columns score, n_events and duration.
+#' Where score is the total score, n_events is the number of events and duration is the total duration of the events
 simulate_event <- function(AE_type,
                            max_time = 180,
                            n = 1,
@@ -50,10 +51,11 @@ simulate_event <- function(AE_type,
 #' This function simulates multiple events based on the provided event parameters.
 #' @param a list of  AE objects
 #' @param max_time Maximum time to simulate events (in days)
-#' @param death A boolean indicating whether to simulate death events (default = FALSE)
-#' @param susceptibility A list of susceptibility values for the group
-#' @param surpress_info A boolean indicating whether to compute the info data frame
-#' @return A list of the simualted AEs, the toal score and the number of events
+#' @param n Number of events to simulate
+#' @param k_d Shape parameter for the event duration distribution
+#' @param k_s (inverse) Shape parameter for the susceptibility distribution
+#' @param susceptibility A of susceptibility values (default = 1 / rgamma(n, shape = k_s, scale = 1 / k_s) , n and k_s are not used if susceptibility is provided)
+#' @return A dataframe with columns score, n_events and duration.
 simulate_events <- function(AE_types,
                             max_time = 180,
                             n = 1,
@@ -80,16 +82,16 @@ AE2 <- AE(7, Long, MOSTLY_MODERATE)
 AE3 <- AE(3, Long / 2, MOSTLY_MILD)
 AEs <- list(AE1, AE2, AE3)
 
-k_s <- 1
-k_d <- 900
+k_s <- 1.5
+k_d <- 9
 
 res <- simulate_events(AEs, max_time = 180, n = 500000, k_d = k_d , k_s = k_s)
-mean(1-res$score!=0)
+mean(1-(res$score!=0))
 mean(res$score)
 mean(res$score[res$score!=0])
 sd(res$score)
 summary(res$score[res$score!=0])
-19113 - 180*3*3
-summary(res$duration[res$score!=0]/res$n_events[res$score!=0])
-sort(res$duration[res$score!=0]/res$n_events[res$score!=0])[1:10]
+sort(res$duration[res$score!=0]/res$n_events[res$score!=0])[1:3]
 max(res$duration)
+
+sum(res$score[res$score!=0] < 0.2)/500000

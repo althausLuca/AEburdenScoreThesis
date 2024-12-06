@@ -10,7 +10,7 @@ severity_factor_names <- c("default" = "Equal settings",
                            "next_level_experimental" = "Experimental next severity level",
                            "all_mostly_severe_experimental" = "Experimental all mostly severe",
                            "all_severe_experimental" = "Experimental all severe",
-                           "all_severe_experimental_all_mild_control" = "Experimental all sever \n Control all mild"
+                           "all_severe_experimental_all_mild_control" = "Experimental all severe \n Control all mild"
 )
 
 # plot_severity_variation()
