@@ -4,7 +4,7 @@ This repository contains code for the simulation of adverse event burden scores 
 The project is part of a master thesis at the University of Bern, Switzerland.
 
 All the scripts are located in the `R` folder, with subdirectories for:
-- [data generation](R/data_generation/README.md)
+- [data generation](R/data_generation/)
 - model implementationrelative
 - evaluation techniques
 
