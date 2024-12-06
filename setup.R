@@ -28,11 +28,6 @@ install.packages("glmmTMB") # version 1.1.9
 install.packages("pracma")
 
 
-
-# Load documentation
-#roxygen2::roxygenise(".") #TODO test why this runs code
-
-
 # Check if the version is correct
 if(!packageVersion("glmmTMB") >= "1.1.9"){
   stop("Please install the correct version of glmmTMB otherwise the zero_inflated log_normalmodels will not work. \n

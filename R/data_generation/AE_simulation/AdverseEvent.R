@@ -10,10 +10,15 @@
 #'
 #' @return An event object with defined parameters
 AE <- function(event_duration,
-               time_between_events,
+               gap_time,
                severity_probabilities,
                severity_weights = c(1, 2, 3),
-               time_to_first_event = time_between_events) {
+               time_to_first_event = gap_time,
+               time_between_events = gap_time) {
+
+  stopifnot(event_duration > 0)
+  stopifnot(time_between_events > 0)
+  stopifnot(length(severity_probabilities) == length(severity_weights))
 
   event <- list(
     time_to_first_event = time_to_first_event,
@@ -54,20 +59,13 @@ apply_susceptibility <- function(AE_type, susceptibility) {
 }
 
 
-##sampling methods for an adverse event
-
-sample_to_first_event <- function(AE_type, n = 1) {
-  check_AE(AE_type)
-  if (AE_type$gap_time == Inf) { return(Inf) }
-  return(rexp(n, 1 / AE_type$gap_time))
-}
-
+#sampling methods for an adverse event episodes
 sample_event_duration <- function(AE_type, shape = 9, n = 1) {
   if (AE_type$duration == Inf) { return(Inf) }
   return(rgamma(n, shape = shape, scale = AE_type$duration / shape))
 }
 
-sample_time_gap_time <- function(AE_type, n=1 , s = rep(1, n)) {
+sample_gap_time <- function(AE_type, n=1, s = rep(1, n)) {
   if (AE_type$gap_time == Inf) { return(Inf) }
   return(rexp(length(s), s / AE_type$gap_time))
 }
@@ -75,7 +73,6 @@ sample_time_gap_time <- function(AE_type, n=1 , s = rep(1, n)) {
 sample_severity <- function(AE_type, n = 1) {
   return(sample(AE_type$severity_weights, size = n, prob = AE_type$severity_probabilities, replace = TRUE))
 }
-
 
 change_AE_type_property <- function(AE_type, property, factor) {
   if (!is.null(AE_type[[property]])) {

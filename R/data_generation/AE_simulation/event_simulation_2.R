@@ -73,25 +73,25 @@ simulate_events <- function(AE_types,
   }
   return(result)
 }
-
-## Example usage
-source("R/data_generation/AE_types.R")
-Long <- 1500
-AE1 <- AE(3, Long, MOSTLY_MILD)
-AE2 <- AE(7, Long, MOSTLY_MODERATE)
-AE3 <- AE(3, Long / 2, MOSTLY_MILD)
-AEs <- list(AE1, AE2, AE3)
-
-k_s <- 1.5
-k_d <- 9
-
-res <- simulate_events(AEs, max_time = 180, n = 500000, k_d = k_d , k_s = k_s)
-mean(1-(res$score!=0))
-mean(res$score)
-mean(res$score[res$score!=0])
-sd(res$score)
-summary(res$score[res$score!=0])
-sort(res$duration[res$score!=0]/res$n_events[res$score!=0])[1:3]
-max(res$duration)
-
-sum(res$score[res$score!=0] < 0.2)/500000
+#
+# ## Example usage
+# source("R/data_generation/AE_types.R")
+# Long <- 1500
+# AE1 <- AE(3, Long, MOSTLY_MILD)
+# AE2 <- AE(7, Long, MOSTLY_MODERATE)
+# AE3 <- AE(3, Long / 2, MOSTLY_MILD)
+# AEs <- list(AE1, AE2, AE3)
+#
+# k_s <- 1.5
+# k_d <- 9
+#
+# res <- simulate_events(AEs, max_time = 180, n = 500000, k_d = k_d , k_s = k_s)
+# mean(1-(res$score!=0))
+# mean(res$score)
+# mean(res$score[res$score!=0])
+# sd(res$score)
+# summary(res$score[res$score!=0])
+# sort(res$duration[res$score!=0]/res$n_events[res$score!=0])[1:3]
+# max(res$duration)
+#
+# sum(res$score[res$score!=0] < 0.2)/500000

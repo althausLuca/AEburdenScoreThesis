@@ -7,12 +7,10 @@ source("R/Scenarios.R")
 source("R/trials/trial_simulation.R")
 source("R/trials/trial_analysis.R")
 
-set.seed(7)
 
 n_sim <- 10000
 n_subjects <- 100 # per group
 scenario_name <- "Scenario_2"
-
 
 scenario <- load_scenario(scenario_name)
 scenario$control[, c(1, 2)]

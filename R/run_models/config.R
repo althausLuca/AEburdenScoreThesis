@@ -6,8 +6,8 @@ source("R/models_and_tests/models_and_tests.R")
 source("R/run_models/model_computer.R")
 source("R/data_generation/config_and_init.R", local = (dg_config <- new.env()))
 
-CLEAR_ALL <- FALSE # recompute everything
-HALT_ON_ERROR <- TRUE #  stop or compute what works
+CLEAR_ALL <- FALSE # recompute everything or only missing results
+HALT_ON_ERROR <- TRUE #  stop or skip on error
 
 TRIAL_DATA_PATH <-  Sys.getenv("TRIAL_FOLDER", unset = "data/")
 MODEL_RESULT_PATH <- Sys.getenv("RESULT_FOLDER", unset = "results/")
@@ -24,7 +24,7 @@ DEFAULT_MODELS <- list(
   TWEEDIE_REGRESSION(xi = "infer", use_mle = T),
   TWEEDIE_REGRESSION(xi = 1.2, use_mle = T),
   TWEEDIE_REGRESSION(xi = 1.8, use_mle = T),
-  force_computation(QUANTILE_REGRESSION()),
+  QUANTILE_REGRESSION(),
   QUANTILE_REGRESSION(tau = 0.75),
   WILCOXON_TEST(),
   PERMUTATION_TEST(),
