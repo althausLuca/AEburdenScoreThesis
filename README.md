@@ -11,6 +11,12 @@ All the scripts are located in the `R` folder, with subdirectories for:
 - [model execution](R/run_models/)
 - [evaluation](R/evaluation/)
 
+### Other Directories
+- **`data`**: Contains simulated AE burden score data.
+- **`results`**: Storing the output from model/test runs.
+- **`plots`**: Directory for storing figures and visualizations from the evluation.
+
+
 ## Used Methods: 
 ### Models
 - ANOVA
@@ -26,13 +32,7 @@ All the scripts are located in the `R` folder, with subdirectories for:
 - Two-part T-Test
 - Two-part Wilcoxon Rank-Sum Test
 
-### Setup
-The file 'setup.R' loads the necessary packages to run the scripts. 
 
-### Other Directories
-- **`data`**: Contains simulated AE burden score data.
-- **`results`**: Storing the output from model/test runs.
-- **`plots`**: Directory for storing figures and visualizations from the evluation.
 
 
 
